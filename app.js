@@ -197,3 +197,21 @@ export function renderLoading() {
     </div>
   `;
 }
+
+// Tema salvo no localStorage (só preferência visual, não dados)
+function aplicarTema() {
+  const tema = localStorage.getItem('tema') || 'dark';
+  document.body.classList.toggle('light', tema === 'light');
+  const btn = document.getElementById('btnTema');
+  if (btn) btn.textContent = tema === 'light' ? '🌙' : '☀️';
+}
+
+window.alternarTema = function() {
+  const atual = localStorage.getItem('tema') || 'dark';
+  const novo  = atual === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('tema', novo);
+  aplicarTema();
+};
+
+// Chame no início de cada página:
+aplicarTema();

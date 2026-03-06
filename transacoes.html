@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Transações — FinanceFlow</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <!-- Loading -->
@@ -26,11 +28,27 @@
         <span id="headerMes" style="font-size:0.78rem;color:var(--text-2);font-weight:500;margin-left:4px;"></span>
       </div>
       <div class="header-actions">
+        <button class="btn-icon" id="btnTema" onclick="alternarTema()" title="Alternar tema">🌙</button>
         <button class="btn btn-primary" onclick="abrirModal()">+ Nova Transação</button>
       </div>
     </header>
 
     <main class="page-content">
+
+      <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--border);">
+        <button class="tab-btn active" data-tab="todos" onclick="setTab('todos', this)">
+          Todos
+        </button>
+        <button class="tab-btn" data-tab="entrada" onclick="setTab('entrada', this)">
+          ↑ Entradas
+        </button>
+        <button class="tab-btn" data-tab="saida" onclick="setTab('saida', this)">
+          ↓ Saídas
+        </button>
+        <button class="tab-btn" data-tab="investimento" onclick="setTab('investimento', this)">
+          ▲ Investimentos
+        </button>
+      </div>
 
       <!-- Cards resumo -->
       <div class="summary-grid">
@@ -66,12 +84,14 @@
         <button class="filter-chip active" data-filtro="todos" onclick="setFiltro('todos', this)">Todos</button>
         <button class="filter-chip" data-filtro="entrada" onclick="setFiltro('entrada', this)">Entradas</button>
         <button class="filter-chip" data-filtro="saida" onclick="setFiltro('saida', this)">Saídas</button>
-        <button class="filter-chip" data-filtro="investimento" onclick="setFiltro('investimento', this)">Investimentos</button>
+        <button class="filter-chip" data-filtro="investimento"
+          onclick="setFiltro('investimento', this)">Investimentos</button>
         <button class="filter-chip" data-filtro="pago" onclick="setFiltro('pago', this)">Pagos</button>
         <button class="filter-chip" data-filtro="pendente" onclick="setFiltro('pendente', this)">Pendentes</button>
         <button class="filter-chip" data-filtro="fixo" onclick="setFiltro('fixo', this)">Fixos</button>
         <div style="margin-left:auto;">
-          <input type="text" class="form-input" id="busca" placeholder="🔍  Buscar..." style="width:200px;padding:6px 12px;font-size:0.82rem;" oninput="filtrarTabela()">
+          <input type="text" class="form-input" id="busca" placeholder="🔍  Buscar..."
+            style="width:200px;padding:6px 12px;font-size:0.82rem;" oninput="filtrarTabela()">
         </div>
       </div>
 
@@ -195,33 +215,33 @@
       </div>
 
       <!-- Parcelado -->
-      <div class="form-group">
-        <label class="form-label">Parcelado?</label>
-        <div style="display:flex;gap:10px;align-items:center;">
+      <div id="grupoParcelado">
+        <div class="form-group">
           <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-2);cursor:pointer;">
-            <input type="checkbox" id="inputParcelado" onchange="onParceladoChange()" style="accent-color:var(--accent);width:15px;height:15px;">
+            <input type="checkbox" id="inputParcelado" onchange="onParceladoChange()"
+              style="accent-color:var(--accent);width:15px;height:15px;">
             Sim, é parcelado
           </label>
         </div>
+        <div class="form-row cols-2" id="grupoParcelas" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Total de Parcelas</label>
+            <input type="number" class="form-input" id="inputTotalParcelas" placeholder="Ex: 6" min="2" max="60">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Parcela Atual</label>
+            <input type="number" class="form-input" id="inputParcelaAtual" placeholder="Ex: 1" min="1" max="60">
+          </div>
+        </div>
       </div>
 
-      <div class="form-row cols-2" id="grupoParcelas" style="display:none;">
+      <div id="grupoRecorrente">
         <div class="form-group">
-          <label class="form-label">Total de Parcelas</label>
-          <input type="number" class="form-input" id="inputTotalParcelas" placeholder="Ex: 6" min="2" max="60">
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-2);cursor:pointer;">
+            <input type="checkbox" id="inputRecorrente" style="accent-color:var(--accent);width:15px;height:15px;">
+            Repetir todo mês automaticamente
+          </label>
         </div>
-        <div class="form-group">
-          <label class="form-label">Parcela Atual</label>
-          <input type="number" class="form-input" id="inputParcelaAtual" placeholder="Ex: 1" min="1" max="60">
-        </div>
-      </div>
-
-      <!-- Recorrente -->
-      <div class="form-group">
-        <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-2);cursor:pointer;">
-          <input type="checkbox" id="inputRecorrente" style="accent-color:var(--accent);width:15px;height:15px;">
-          Repetir todo mês automaticamente
-        </label>
       </div>
 
       <!-- Botões -->
@@ -236,136 +256,136 @@
   <!-- Toast -->
   <div id="toast" class="toast"></div>
 
-<script type="module">
-  import {
-    db, collection, addDoc, getDocs, updateDoc, deleteDoc,
-    doc, query, where, orderBy, serverTimestamp
-  } from './firebase.js';
-  import {
-    renderSidebar, formatBRL, formatDate, formatMonthYear,
-    getMesAtual, navegarMes, CATEGORIAS, CATEGORIAS_MAP,
-    hideLoading, showToast, openModal, closeModal
-  } from './app.js';
+  <script type="module">
+    import {
+      db, collection, addDoc, getDocs, updateDoc, deleteDoc,
+      doc, query, where, orderBy, serverTimestamp
+    } from './firebase.js';
+    import {
+      renderSidebar, formatBRL, formatDate, formatMonthYear,
+      getMesAtual, navegarMes, CATEGORIAS, CATEGORIAS_MAP,
+      hideLoading, showToast, openModal, closeModal
+    } from './app.js';
 
-  // ── Estado ──
-  window.APP_MES  = getMesAtual();
-  let transacoes  = [];
-  let filtroAtivo = 'todos';
-  let editandoId  = null;
-  let cartoes     = [];
-  let metas       = [];
+    // ── Estado ──
+    window.APP_MES = getMesAtual();
+    let transacoes = [];
+    let filtroAtivo = 'todos';
+    let editandoId = null;
+    let cartoes = [];
+    let metas = [];
 
-  // ── Init ──
-  renderSidebar('transacoes', window.APP_MES, (mes) => {
-    window.APP_MES = mes;
-    document.getElementById('headerMes').textContent = '— ' + formatMonthYear(mes);
-    carregarTransacoes();
-  });
-
-  document.getElementById('headerMes').textContent = '— ' + formatMonthYear(window.APP_MES);
-  preencherCategorias();
-  await carregarCartoes();
-  await carregarMetas();
-  await carregarTransacoes();
-
-  // ── Preenche categorias no select ──
-  function preencherCategorias() {
-    const sel = document.getElementById('inputCategoria');
-    sel.innerHTML = CATEGORIAS.map(c =>
-      `<option value="${c.value}">${c.icon} ${c.label}</option>`
-    ).join('');
-  }
-
-  // ── Carrega cartões ──
-  async function carregarCartoes() {
-    try {
-      const snap = await getDocs(collection(db, 'cartoes'));
-      cartoes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      const sel = document.getElementById('inputCartao');
-      sel.innerHTML = cartoes.length
-        ? cartoes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')
-        : '<option value="">Nenhum cartão cadastrado</option>';
-    } catch(e) { console.error(e); }
-  }
-
-  // ── Carrega metas para destino de investimento ──
-  async function carregarMetas() {
-    try {
-      const snap = await getDocs(collection(db, 'metas'));
-      metas = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(m => m.status !== 'concluida');
-      const sel = document.getElementById('inputDestinoInvest');
-      sel.innerHTML = `<option value="reserva">🛡️ Reserva de Emergência</option>` +
-        metas.map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
-    } catch(e) { console.error(e); }
-  }
-
-  // ── Carrega transações do mês ──
-  async function carregarTransacoes() {
-    try {
-      const q = query(
-        collection(db, 'transacoes'),
-        where('mes', '==', window.APP_MES)
-      );
-      const snap = await getDocs(q);
-      transacoes = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => (b.data || '').localeCompare(a.data || ''));
-
-      calcularResumo();
-      renderTabela();
-    } catch(e) {
-      console.error('Erro ao carregar:', e);
-      showToast('Erro ao carregar transações', 'error');
-    }
-    hideLoading();
-  }
-
-  // ── Resumo ──
-  function calcularResumo() {
-    let recebido = 0, gasto = 0, investido = 0;
-    let qe = 0, qs = 0, qi = 0;
-    transacoes.forEach(t => {
-      if (t.tipo === 'entrada')      { recebido  += t.valor; qe++; }
-      if (t.tipo === 'saida')        { gasto     += t.valor; qs++; }
-      if (t.tipo === 'investimento') { investido += t.valor; qi++; }
+    // ── Init ──
+    renderSidebar('transacoes', window.APP_MES, (mes) => {
+      window.APP_MES = mes;
+      document.getElementById('headerMes').textContent = '— ' + formatMonthYear(mes);
+      carregarTransacoes();
     });
-    const saldo = recebido - gasto - investido;
-    document.getElementById('cardRecebido').textContent  = formatBRL(recebido);
-    document.getElementById('cardGasto').textContent     = formatBRL(gasto);
-    document.getElementById('cardInvestido').textContent = formatBRL(investido);
-    document.getElementById('cardSaldo').textContent     = formatBRL(saldo);
-    document.getElementById('subRecebido').textContent   = `${qe} entrada${qe!==1?'s':''}`;
-    document.getElementById('subGasto').textContent      = `${qs} saída${qs!==1?'s':''}`;
-    document.getElementById('subInvestido').textContent  = `${qi} aporte${qi!==1?'s':''}`;
-    document.getElementById('subSaldo').textContent      = saldo >= 0 ? 'positivo ↑' : 'negativo ↓';
-    document.getElementById('cardSaldo').style.color     = saldo >= 0 ? 'var(--income)' : 'var(--expense)';
-  }
 
-  // ── Render tabela ──
-  function renderTabela() {
-    filtrarTabela();
-  }
+    document.getElementById('headerMes').textContent = '— ' + formatMonthYear(window.APP_MES);
+    preencherCategorias();
+    await carregarCartoes();
+    await carregarMetas();
+    await carregarTransacoes();
 
-  window.filtrarTabela = function() {
-    const busca = (document.getElementById('busca')?.value || '').toLowerCase();
-    let lista = [...transacoes];
-
-    if (filtroAtivo === 'entrada')      lista = lista.filter(t => t.tipo === 'entrada');
-    else if (filtroAtivo === 'saida')   lista = lista.filter(t => t.tipo === 'saida');
-    else if (filtroAtivo === 'investimento') lista = lista.filter(t => t.tipo === 'investimento');
-    else if (filtroAtivo === 'pago')    lista = lista.filter(t => t.status === 'pago');
-    else if (filtroAtivo === 'pendente')lista = lista.filter(t => t.status === 'pendente');
-    else if (filtroAtivo === 'fixo')    lista = lista.filter(t => t.natureza === 'fixo');
-
-    if (busca) {
-      lista = lista.filter(t =>
-        (t.descricao||'').toLowerCase().includes(busca) ||
-        (t.categoria||'').toLowerCase().includes(busca)
-      );
+    // ── Preenche categorias no select ──
+    function preencherCategorias() {
+      const sel = document.getElementById('inputCategoria');
+      sel.innerHTML = CATEGORIAS.map(c =>
+        `<option value="${c.value}">${c.icon} ${c.label}</option>`
+      ).join('');
     }
 
-    const tbody = document.getElementById('corpoTabela');
-    if (!lista.length) {
-      tbody.innerHTML = `
+    // ── Carrega cartões ──
+    async function carregarCartoes() {
+      try {
+        const snap = await getDocs(collection(db, 'cartoes'));
+        cartoes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const sel = document.getElementById('inputCartao');
+        sel.innerHTML = cartoes.length
+          ? cartoes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')
+          : '<option value="">Nenhum cartão cadastrado</option>';
+      } catch (e) { console.error(e); }
+    }
+
+    // ── Carrega metas para destino de investimento ──
+    async function carregarMetas() {
+      try {
+        const snap = await getDocs(collection(db, 'metas'));
+        metas = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(m => m.status !== 'concluida');
+        const sel = document.getElementById('inputDestinoInvest');
+        sel.innerHTML = `<option value="reserva">🛡️ Reserva de Emergência</option>` +
+          metas.map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
+      } catch (e) { console.error(e); }
+    }
+
+    // ── Carrega transações do mês ──
+    async function carregarTransacoes() {
+      try {
+        const q = query(
+          collection(db, 'transacoes'),
+          where('mes', '==', window.APP_MES)
+        );
+        const snap = await getDocs(q);
+        transacoes = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+
+        calcularResumo();
+        renderTabela();
+      } catch (e) {
+        console.error('Erro ao carregar:', e);
+        showToast('Erro ao carregar transações', 'error');
+      }
+      hideLoading();
+    }
+
+    // ── Resumo ──
+    function calcularResumo() {
+      let recebido = 0, gasto = 0, investido = 0;
+      let qe = 0, qs = 0, qi = 0;
+      transacoes.forEach(t => {
+        if (t.tipo === 'entrada') { recebido += t.valor; qe++; }
+        if (t.tipo === 'saida') { gasto += t.valor; qs++; }
+        if (t.tipo === 'investimento') { investido += t.valor; qi++; }
+      });
+      const saldo = recebido - gasto - investido;
+      document.getElementById('cardRecebido').textContent = formatBRL(recebido);
+      document.getElementById('cardGasto').textContent = formatBRL(gasto);
+      document.getElementById('cardInvestido').textContent = formatBRL(investido);
+      document.getElementById('cardSaldo').textContent = formatBRL(saldo);
+      document.getElementById('subRecebido').textContent = `${qe} entrada${qe !== 1 ? 's' : ''}`;
+      document.getElementById('subGasto').textContent = `${qs} saída${qs !== 1 ? 's' : ''}`;
+      document.getElementById('subInvestido').textContent = `${qi} aporte${qi !== 1 ? 's' : ''}`;
+      document.getElementById('subSaldo').textContent = saldo >= 0 ? 'positivo ↑' : 'negativo ↓';
+      document.getElementById('cardSaldo').style.color = saldo >= 0 ? 'var(--income)' : 'var(--expense)';
+    }
+
+    // ── Render tabela ──
+    function renderTabela() {
+      filtrarTabela();
+    }
+
+    window.filtrarTabela = function () {
+      const busca = (document.getElementById('busca')?.value || '').toLowerCase();
+      let lista = [...transacoes];
+
+      if (filtroAtivo === 'entrada') lista = lista.filter(t => t.tipo === 'entrada');
+      else if (filtroAtivo === 'saida') lista = lista.filter(t => t.tipo === 'saida');
+      else if (filtroAtivo === 'investimento') lista = lista.filter(t => t.tipo === 'investimento');
+      else if (filtroAtivo === 'pago') lista = lista.filter(t => t.status === 'pago');
+      else if (filtroAtivo === 'pendente') lista = lista.filter(t => t.status === 'pendente');
+      else if (filtroAtivo === 'fixo') lista = lista.filter(t => t.natureza === 'fixo');
+
+      if (busca) {
+        lista = lista.filter(t =>
+          (t.descricao || '').toLowerCase().includes(busca) ||
+          (t.categoria || '').toLowerCase().includes(busca)
+        );
+      }
+
+      const tbody = document.getElementById('corpoTabela');
+      if (!lista.length) {
+        tbody.innerHTML = `
         <tr><td colspan="9">
           <div class="empty-state">
             <div class="empty-icon">🔍</div>
@@ -373,37 +393,37 @@
             <div class="empty-desc">Tente outro filtro ou adicione uma transação</div>
           </div>
         </td></tr>`;
-      return;
-    }
+        return;
+      }
 
-    tbody.innerHTML = lista.map(t => {
-      const isEntrada = t.tipo === 'entrada';
-      const isInvest  = t.tipo === 'investimento';
-      const cor       = isEntrada ? 'var(--income)' : isInvest ? 'var(--invest)' : 'var(--expense)';
-      const sinal     = isEntrada ? '+' : '−';
-      const cat       = CATEGORIAS_MAP[t.categoria];
-      const cartao    = cartoes.find(c => c.id === t.cartaoId);
+      tbody.innerHTML = lista.map(t => {
+        const isEntrada = t.tipo === 'entrada';
+        const isInvest = t.tipo === 'investimento';
+        const cor = isEntrada ? 'var(--income)' : isInvest ? 'var(--invest)' : 'var(--expense)';
+        const sinal = isEntrada ? '+' : '−';
+        const cat = CATEGORIAS_MAP[t.categoria];
+        const cartao = cartoes.find(c => c.id === t.cartaoId);
 
-      // Cor da linha se for cartão
-      const rowStyle = cartao
-        ? `border-left:3px solid ${cartao.cor || '#6b7280'};`
-        : '';
+        // Cor da linha se for cartão
+        const rowStyle = cartao
+          ? `border-left:3px solid ${cartao.cor || '#6b7280'};`
+          : '';
 
-      // Badge forma de pagamento
-      const formaBadge = {
-        pix:      `<span style="font-size:0.72rem;color:#34d399;">Pix</span>`,
-        debito:   `<span style="font-size:0.72rem;color:#4f8ef7;">Débito</span>`,
-        dinheiro: `<span style="font-size:0.72rem;color:#fbbf24;">Dinheiro</span>`,
-        cartao:   cartao
-          ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;"><span style="width:6px;height:6px;border-radius:50%;background:${cartao.cor};display:inline-block;"></span>${cartao.nome}</span>`
-          : `<span style="font-size:0.72rem;color:var(--text-3);">Cartão</span>`
-      }[t.formaPagamento] || '—';
+        // Badge forma de pagamento
+        const formaBadge = {
+          pix: `<span style="font-size:0.72rem;color:#34d399;">Pix</span>`,
+          debito: `<span style="font-size:0.72rem;color:#4f8ef7;">Débito</span>`,
+          dinheiro: `<span style="font-size:0.72rem;color:#fbbf24;">Dinheiro</span>`,
+          cartao: cartao
+            ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;"><span style="width:6px;height:6px;border-radius:50%;background:${cartao.cor};display:inline-block;"></span>${cartao.nome}</span>`
+            : `<span style="font-size:0.72rem;color:var(--text-3);">Cartão</span>`
+        }[t.formaPagamento] || '—';
 
-      const parcelaInfo = t.parcelado
-        ? `<span style="font-size:0.68rem;color:var(--text-3);margin-left:4px;">${t.parcelaAtual}/${t.totalParcelas}</span>`
-        : '';
+        const parcelaInfo = t.parcelado
+          ? `<span style="font-size:0.68rem;color:var(--text-3);margin-left:4px;">${t.parcelaAtual}/${t.totalParcelas}</span>`
+          : '';
 
-      return `
+        return `
         <tr style="${rowStyle}" class="fade-up">
           <td style="text-align:center;font-size:1rem;">${cat?.icon || '📦'}</td>
           <td>
@@ -438,191 +458,198 @@
           </td>
         </tr>
       `;
-    }).join('');
-  };
-
-  // ── Filtros ──
-  window.setFiltro = function(filtro, btn) {
-    filtroAtivo = filtro;
-    document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    filtrarTabela();
-  };
-
-  // ── Modal ──
-  window.abrirModal = function() {
-    editandoId = null;
-    document.getElementById('modalTitulo').textContent = 'Nova Transação';
-    resetarFormulario();
-    document.getElementById('modalTransacao').classList.add('open');
-  };
-
-  window.fecharModal = function() {
-    document.getElementById('modalTransacao').classList.remove('open');
-    editandoId = null;
-  };
-
-  function resetarFormulario() {
-    document.getElementById('inputDescricao').value = '';
-    document.getElementById('inputValor').value = '';
-    document.getElementById('inputData').value = new Date().toISOString().split('T')[0];
-    document.getElementById('inputCategoria').value = CATEGORIAS[0].value;
-    document.getElementById('inputFormaPagamento').value = 'pix';
-    document.getElementById('inputNatureza').value = 'variavel';
-    document.getElementById('inputPJ').value = 'nao';
-    document.getElementById('inputParcelado').checked = false;
-    document.getElementById('inputRecorrente').checked = false;
-    document.getElementById('grupoParcelas').style.display = 'none';
-    document.getElementById('grupoCartao').style.display = 'none';
-    document.getElementById('grupoDestinoinvestimento').style.display = 'none';
-    document.getElementById('grupoFormaPagamento').style.display = '';
-    setTipo('entrada');
-  }
-
-  // ── Tipo ──
-  window.setTipo = function(tipo) {
-    document.querySelectorAll('.type-btn').forEach(b => {
-      b.classList.remove('active-entrada','active-saida','active-invest');
-    });
-    const btn = document.querySelector(`.type-btn[data-tipo="${tipo}"]`);
-    if (btn) btn.classList.add(`active-${tipo === 'saida' ? 'saida' : tipo === 'investimento' ? 'invest' : 'entrada'}`);
-    btn._tipoAtivo = tipo;
-
-    // Destino investimento
-    document.getElementById('grupoDestinoinvestimento').style.display =
-      tipo === 'investimento' ? '' : 'none';
-
-    // PJ só para entrada
-    document.getElementById('grupoPJFreelance').style.display =
-      tipo === 'entrada' ? '' : 'none';
-
-    // Forma de pagamento só para saída
-    document.getElementById('grupoFormaPagamento').style.display =
-      tipo === 'saida' ? '' : 'none';
-  };
-
-  // ── Forma de pagamento ──
-  window.onFormaPagamentoChange = function() {
-    const forma = document.getElementById('inputFormaPagamento').value;
-    document.getElementById('grupoCartao').style.display = forma === 'cartao' ? '' : 'none';
-  };
-
-  // ── Parcelado ──
-  window.onParceladoChange = function() {
-    const checked = document.getElementById('inputParcelado').checked;
-    document.getElementById('grupoParcelas').style.display = checked ? '' : 'none';
-  };
-
-  // ── Salvar ──
-  window.salvarTransacao = async function() {
-    const tipoBtn = document.querySelector('.type-btn[class*="active-"]');
-    const tipo = tipoBtn?.dataset.tipo || 'entrada';
-    const descricao = document.getElementById('inputDescricao').value.trim();
-    const valor     = parseFloat(document.getElementById('inputValor').value);
-    const data      = document.getElementById('inputData').value;
-    const categoria = document.getElementById('inputCategoria').value;
-    const natureza  = document.getElementById('inputNatureza').value;
-    const isPJ      = document.getElementById('inputPJ').value;
-    const parcelado = document.getElementById('inputParcelado').checked;
-    const recorrente= document.getElementById('inputRecorrente').checked;
-
-    if (!descricao) return showToast('Preencha a descrição', 'error');
-    if (!valor || valor <= 0) return showToast('Informe um valor válido', 'error');
-    if (!data) return showToast('Informe a data', 'error');
-
-    // Forma de pagamento e status
-    let formaPagamento = 'pix', cartaoId = null, status = 'pago';
-    if (tipo === 'saida') {
-      formaPagamento = document.getElementById('inputFormaPagamento').value;
-      if (formaPagamento === 'cartao') {
-        cartaoId = document.getElementById('inputCartao').value;
-        status = 'pendente';
-      }
-    }
-
-    // Destino investimento
-    let destinoInvest = null;
-    if (tipo === 'investimento') {
-      destinoInvest = document.getElementById('inputDestinoInvest').value;
-    }
-
-    const payload = {
-      tipo, descricao, valor, data, categoria, natureza, isPJ,
-      formaPagamento, cartaoId, status, parcelado, recorrente,
-      destinoInvest,
-      mes: window.APP_MES,
-      criadoEm: serverTimestamp()
+      }).join('');
     };
 
-    if (parcelado) {
-      payload.totalParcelas = parseInt(document.getElementById('inputTotalParcelas').value) || 1;
-      payload.parcelaAtual  = parseInt(document.getElementById('inputParcelaAtual').value) || 1;
+    // ── Filtros ──
+    window.setFiltro = function (filtro, btn) {
+      filtroAtivo = filtro;
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filtrarTabela();
+    };
+
+    // ── Modal ──
+    window.abrirModal = function () {
+      editandoId = null;
+      document.getElementById('modalTitulo').textContent = 'Nova Transação';
+      resetarFormulario();
+      document.getElementById('modalTransacao').classList.add('open');
+      document.getElementById('grupoParcelado').style.display = 'none';
+      document.getElementById('grupoRecorrente').style.display = 'none';
+    };
+
+    window.fecharModal = function () {
+      document.getElementById('modalTransacao').classList.remove('open');
+      editandoId = null;
+    };
+
+    function resetarFormulario() {
+      document.getElementById('inputDescricao').value = '';
+      document.getElementById('inputValor').value = '';
+      document.getElementById('inputData').value = new Date().toISOString().split('T')[0];
+      document.getElementById('inputCategoria').value = CATEGORIAS[0].value;
+      document.getElementById('inputFormaPagamento').value = 'pix';
+      document.getElementById('inputNatureza').value = 'variavel';
+      document.getElementById('inputPJ').value = 'nao';
+      document.getElementById('inputParcelado').checked = false;
+      document.getElementById('inputRecorrente').checked = false;
+      document.getElementById('grupoParcelas').style.display = 'none';
+      document.getElementById('grupoCartao').style.display = 'none';
+      document.getElementById('grupoDestinoinvestimento').style.display = 'none';
+      document.getElementById('grupoFormaPagamento').style.display = '';
+      setTipo('entrada');
     }
 
-    try {
-      if (editandoId) {
-        await updateDoc(doc(db, 'transacoes', editandoId), payload);
-        showToast('Transação atualizada!');
-      } else {
-        await addDoc(collection(db, 'transacoes'), payload);
-        showToast('Transação salva!');
+    // ── Tipo ──
+    window.setTipo = function (tipo) {
+      document.querySelectorAll('.type-btn').forEach(b => {
+        b.classList.remove('active-entrada', 'active-saida', 'active-invest');
+      });
+      const btn = document.querySelector(`.type-btn[data-tipo="${tipo}"]`);
+      if (btn) btn.classList.add(`active-${tipo === 'saida' ? 'saida' : tipo === 'investimento' ? 'invest' : 'entrada'}`);
+
+      // Destino investimento
+      document.getElementById('grupoDestinoinvestimento').style.display =
+        tipo === 'investimento' ? '' : 'none';
+
+      // PJ só para entrada
+      document.getElementById('grupoPJFreelance').style.display =
+        tipo === 'entrada' ? '' : 'none';
+
+      // Forma de pagamento só para saída
+      document.getElementById('grupoFormaPagamento').style.display =
+        tipo === 'saida' ? '' : 'none';
+
+      // Parcelado e recorrente só para saída
+      document.getElementById('grupoParcelado').style.display =
+        tipo === 'saida' ? '' : 'none';
+      document.getElementById('grupoRecorrente').style.display =
+        tipo === 'saida' ? '' : 'none';
+
+      // Categoria opcional para entrada (label muda)
+      const labelCat = document.querySelector('label[for-cat]');
+      document.getElementById('inputCategoria').required = tipo !== 'entrada';
+    };
+
+    // ── Salvar ──
+    window.salvarTransacao = async function () {
+      const tipoBtn = document.querySelector('.type-btn[class*="active-"]');
+      const tipo = tipoBtn?.dataset.tipo || 'entrada';
+      const descricao = document.getElementById('inputDescricao').value.trim();
+      const valor = parseFloat(document.getElementById('inputValor').value);
+      const data = document.getElementById('inputData').value;
+      const categoria = document.getElementById('inputCategoria').value;
+      const natureza = document.getElementById('inputNatureza').value;
+      const isPJ = document.getElementById('inputPJ').value;
+      const parcelado = document.getElementById('inputParcelado').checked;
+      const recorrente = document.getElementById('inputRecorrente').checked;
+
+      if (!descricao) return showToast('Preencha a descrição', 'error');
+      if (!valor || valor <= 0) return showToast('Informe um valor válido', 'error');
+      if (!data) return showToast('Informe a data', 'error');
+
+      // Forma de pagamento e status
+      let formaPagamento = 'pix', cartaoId = null, status = 'pago';
+      if (tipo === 'saida') {
+        formaPagamento = document.getElementById('inputFormaPagamento').value;
+        if (formaPagamento === 'cartao') {
+          cartaoId = document.getElementById('inputCartao').value;
+          status = 'pendente';
+        }
       }
-      fecharModal();
-      await carregarTransacoes();
-    } catch(e) {
-      console.error(e);
-      showToast('Erro ao salvar', 'error');
-    }
-  };
 
-  // ── Editar ──
-  window.editarTransacao = function(id) {
-    const t = transacoes.find(x => x.id === id);
-    if (!t) return;
-    editandoId = id;
-    document.getElementById('modalTitulo').textContent = 'Editar Transação';
-    setTipo(t.tipo);
-    document.getElementById('inputDescricao').value  = t.descricao || '';
-    document.getElementById('inputValor').value      = t.valor || '';
-    document.getElementById('inputData').value       = t.data || '';
-    document.getElementById('inputCategoria').value  = t.categoria || '';
-    document.getElementById('inputNatureza').value   = t.natureza || 'variavel';
-    document.getElementById('inputPJ').value         = t.isPJ || 'nao';
-    document.getElementById('inputFormaPagamento').value = t.formaPagamento || 'pix';
-    document.getElementById('inputParcelado').checked   = t.parcelado || false;
-    document.getElementById('inputRecorrente').checked  = t.recorrente || false;
-    if (t.parcelado) {
-      document.getElementById('grupoParcelas').style.display = '';
-      document.getElementById('inputTotalParcelas').value = t.totalParcelas || '';
-      document.getElementById('inputParcelaAtual').value  = t.parcelaAtual || '';
-    }
-    if (t.formaPagamento === 'cartao') {
-      document.getElementById('grupoCartao').style.display = '';
-      document.getElementById('inputCartao').value = t.cartaoId || '';
-    }
-    if (t.tipo === 'investimento' && t.destinoInvest) {
-      document.getElementById('inputDestinoInvest').value = t.destinoInvest;
-    }
-    document.getElementById('modalTransacao').classList.add('open');
-  };
+      // Destino investimento
+      let destinoInvest = null;
+      if (tipo === 'investimento') {
+        destinoInvest = document.getElementById('inputDestinoInvest').value;
+      }
 
-  // ── Excluir ──
-  window.excluirTransacao = async function(id) {
-    if (!confirm('Excluir esta transação?')) return;
-    try {
-      await deleteDoc(doc(db, 'transacoes', id));
-      showToast('Transação excluída');
-      await carregarTransacoes();
-    } catch(e) {
-      showToast('Erro ao excluir', 'error');
-    }
-  };
+      const payload = {
+        tipo, descricao, valor, data, categoria, natureza, isPJ,
+        formaPagamento, cartaoId, status, parcelado, recorrente,
+        destinoInvest,
+        mes: window.APP_MES,
+        criadoEm: serverTimestamp()
+      };
 
-  // Fecha modal clicando fora
-  document.getElementById('modalTransacao').addEventListener('click', function(e) {
-    if (e.target === this) fecharModal();
-  });
-</script>
+      if (parcelado) {
+        payload.totalParcelas = parseInt(document.getElementById('inputTotalParcelas').value) || 1;
+        payload.parcelaAtual = parseInt(document.getElementById('inputParcelaAtual').value) || 1;
+      }
+
+      try {
+        if (editandoId) {
+          await updateDoc(doc(db, 'transacoes', editandoId), payload);
+          showToast('Transação atualizada!');
+        } else {
+          await addDoc(collection(db, 'transacoes'), payload);
+          showToast('Transação salva!');
+        }
+        fecharModal();
+        await carregarTransacoes();
+      } catch (e) {
+        console.error(e);
+        showToast('Erro ao salvar', 'error');
+      }
+    };
+
+    window.setTab = function (tab, btn) {
+      filtroAtivo = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filtrarTabela();
+    };
+
+    // ── Editar ──
+    window.editarTransacao = function (id) {
+      const t = transacoes.find(x => x.id === id);
+      if (!t) return;
+      editandoId = id;
+      document.getElementById('modalTitulo').textContent = 'Editar Transação';
+      setTipo(t.tipo);
+      document.getElementById('inputDescricao').value = t.descricao || '';
+      document.getElementById('inputValor').value = t.valor || '';
+      document.getElementById('inputData').value = t.data || '';
+      document.getElementById('inputCategoria').value = t.categoria || '';
+      document.getElementById('inputNatureza').value = t.natureza || 'variavel';
+      document.getElementById('inputPJ').value = t.isPJ || 'nao';
+      document.getElementById('inputFormaPagamento').value = t.formaPagamento || 'pix';
+      document.getElementById('inputParcelado').checked = t.parcelado || false;
+      document.getElementById('inputRecorrente').checked = t.recorrente || false;
+      if (t.parcelado) {
+        document.getElementById('grupoParcelas').style.display = '';
+        document.getElementById('inputTotalParcelas').value = t.totalParcelas || '';
+        document.getElementById('inputParcelaAtual').value = t.parcelaAtual || '';
+      }
+      if (t.formaPagamento === 'cartao') {
+        document.getElementById('grupoCartao').style.display = '';
+        document.getElementById('inputCartao').value = t.cartaoId || '';
+      }
+      if (t.tipo === 'investimento' && t.destinoInvest) {
+        document.getElementById('inputDestinoInvest').value = t.destinoInvest;
+      }
+      document.getElementById('modalTransacao').classList.add('open');
+    };
+
+    // ── Excluir ──
+    window.excluirTransacao = async function (id) {
+      if (!confirm('Excluir esta transação?')) return;
+      try {
+        await deleteDoc(doc(db, 'transacoes', id));
+        showToast('Transação excluída');
+        await carregarTransacoes();
+      } catch (e) {
+        showToast('Erro ao excluir', 'error');
+      }
+    };
+
+    // Fecha modal clicando fora
+    document.getElementById('modalTransacao').addEventListener('click', function (e) {
+      if (e.target === this) fecharModal();
+    });
+  </script>
 
 </body>
+
 </html>
