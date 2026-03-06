@@ -212,8 +212,8 @@
         <div class="form-row cols-3" id="grupoParcelas" style="display:none;">
           <div class="form-group">
             <label class="form-label">Valor da Parcela (R$)</label>
-            <input type="number" class="form-input" id="inputValorParcela" placeholder="Ex: 100,00"
-              step="0.01" min="0" oninput="sincronizarValorParcela()">
+            <input type="number" class="form-input" id="inputValorParcela" placeholder="Ex: 100,00" step="0.01" min="0"
+              oninput="sincronizarValorParcela()">
           </div>
           <div class="form-group">
             <label class="form-label">Parcela Atual</label>
@@ -230,8 +230,7 @@
       <div id="grupoRecorrente" style="display:none;">
         <div class="form-group">
           <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-2);cursor:pointer;">
-            <input type="checkbox" id="inputRecorrente"
-              style="accent-color:var(--accent);width:15px;height:15px;">
+            <input type="checkbox" id="inputRecorrente" style="accent-color:var(--accent);width:15px;height:15px;">
             Repetir todo mês automaticamente
           </label>
         </div>
@@ -258,11 +257,11 @@
       getMesAtual, CATEGORIAS, CATEGORIAS_MAP, hideLoading, showToast
     } from './app.js';
 
-    window.APP_MES  = getMesAtual();
-    let transacoes  = [];
+    window.APP_MES = getMesAtual();
+    let transacoes = [];
     let filtroAtivo = 'todos';
-    let editandoId  = null;
-    let cartoes     = [];
+    let editandoId = null;
+    let cartoes = [];
 
     aplicarTema();
     renderSidebar('transacoes', window.APP_MES, (mes) => {
@@ -337,31 +336,31 @@
     function calcularResumo() {
       let recebido = 0, gasto = 0, investido = 0, qe = 0, qs = 0, qi = 0;
       transacoes.forEach(t => {
-        if (t.tipo === 'entrada')      { recebido  += t.valor; qe++; }
-        if (t.tipo === 'saida')        { gasto     += t.valor; qs++; }
+        if (t.tipo === 'entrada') { recebido += t.valor; qe++; }
+        if (t.tipo === 'saida') { gasto += t.valor; qs++; }
         if (t.tipo === 'investimento') { investido += t.valor; qi++; }
       });
       const saldo = recebido - gasto - investido;
-      document.getElementById('cardRecebido').textContent  = formatBRL(recebido);
-      document.getElementById('cardGasto').textContent     = formatBRL(gasto);
+      document.getElementById('cardRecebido').textContent = formatBRL(recebido);
+      document.getElementById('cardGasto').textContent = formatBRL(gasto);
       document.getElementById('cardInvestido').textContent = formatBRL(investido);
-      document.getElementById('cardSaldo').textContent     = formatBRL(saldo);
-      document.getElementById('subRecebido').textContent   = `${qe} entrada${qe !== 1 ? 's' : ''}`;
-      document.getElementById('subGasto').textContent      = `${qs} saída${qs !== 1 ? 's' : ''}`;
-      document.getElementById('subInvestido').textContent  = `${qi} aporte${qi !== 1 ? 's' : ''}`;
-      document.getElementById('subSaldo').textContent      = saldo >= 0 ? 'positivo ↑' : 'negativo ↓';
-      document.getElementById('cardSaldo').style.color     = saldo >= 0 ? 'var(--income)' : 'var(--expense)';
+      document.getElementById('cardSaldo').textContent = formatBRL(saldo);
+      document.getElementById('subRecebido').textContent = `${qe} entrada${qe !== 1 ? 's' : ''}`;
+      document.getElementById('subGasto').textContent = `${qs} saída${qs !== 1 ? 's' : ''}`;
+      document.getElementById('subInvestido').textContent = `${qi} aporte${qi !== 1 ? 's' : ''}`;
+      document.getElementById('subSaldo').textContent = saldo >= 0 ? 'positivo ↑' : 'negativo ↓';
+      document.getElementById('cardSaldo').style.color = saldo >= 0 ? 'var(--income)' : 'var(--expense)';
     }
 
     window.filtrarTabela = function () {
       const busca = (document.getElementById('busca')?.value || '').toLowerCase();
       let lista = [...transacoes];
-      if (filtroAtivo === 'entrada')       lista = lista.filter(t => t.tipo === 'entrada');
-      else if (filtroAtivo === 'saida')    lista = lista.filter(t => t.tipo === 'saida');
+      if (filtroAtivo === 'entrada') lista = lista.filter(t => t.tipo === 'entrada');
+      else if (filtroAtivo === 'saida') lista = lista.filter(t => t.tipo === 'saida');
       else if (filtroAtivo === 'investimento') lista = lista.filter(t => t.tipo === 'investimento');
-      else if (filtroAtivo === 'pago')     lista = lista.filter(t => t.status === 'pago');
+      else if (filtroAtivo === 'pago') lista = lista.filter(t => t.status === 'pago');
       else if (filtroAtivo === 'pendente') lista = lista.filter(t => t.status === 'pendente');
-      else if (filtroAtivo === 'fixo')     lista = lista.filter(t => t.natureza === 'fixo');
+      else if (filtroAtivo === 'fixo') lista = lista.filter(t => t.natureza === 'fixo');
       if (busca) lista = lista.filter(t =>
         (t.descricao || '').toLowerCase().includes(busca) ||
         (t.categoria || '').toLowerCase().includes(busca)
@@ -379,19 +378,19 @@
 
       tbody.innerHTML = lista.map(t => {
         const isEntrada = t.tipo === 'entrada';
-        const isInvest  = t.tipo === 'investimento';
-        const cor       = isEntrada ? 'var(--income)' : isInvest ? 'var(--invest)' : 'var(--expense)';
-        const sinal     = isEntrada ? '+' : '−';
-        const cat       = CATEGORIAS_MAP[t.categoria];
-        const cartao    = cartoes.find(c => c.id === t.cartaoId);
-        const rowStyle  = cartao ? `border-left:3px solid ${cartao.cor || '#6b7280'};` : '';
+        const isInvest = t.tipo === 'investimento';
+        const cor = isEntrada ? 'var(--income)' : isInvest ? 'var(--invest)' : 'var(--expense)';
+        const sinal = isEntrada ? '+' : '−';
+        const cat = CATEGORIAS_MAP[t.categoria];
+        const cartao = cartoes.find(c => c.id === t.cartaoId);
+        const rowStyle = cartao ? `border-left:3px solid ${cartao.cor || '#6b7280'};` : '';
         const valorExibido = t.parcelado && t.valorParcela ? t.valorParcela : t.valor;
 
         const formaBadge = {
-          pix:      `<span style="font-size:0.72rem;color:#34d399;">Pix</span>`,
-          debito:   `<span style="font-size:0.72rem;color:#4f8ef7;">Débito</span>`,
+          pix: `<span style="font-size:0.72rem;color:#34d399;">Pix</span>`,
+          debito: `<span style="font-size:0.72rem;color:#4f8ef7;">Débito</span>`,
           dinheiro: `<span style="font-size:0.72rem;color:#fbbf24;">Dinheiro</span>`,
-          cartao:   cartao
+          cartao: cartao
             ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.72rem;">
                 <span style="width:6px;height:6px;border-radius:50%;background:${cartao.cor};display:inline-block;"></span>
                 ${cartao.nome}</span>`
@@ -456,17 +455,17 @@
     };
 
     function resetarFormulario() {
-      document.getElementById('inputDescricao').value     = '';
-      document.getElementById('inputValor').value         = '';
-      document.getElementById('inputValorParcela').value  = '';
-      document.getElementById('inputData').value          = new Date().toISOString().split('T')[0];
-      document.getElementById('inputNatureza').value      = 'variavel';
-      document.getElementById('inputPJ').value            = 'nao';
-      document.getElementById('inputFormaPagamento').value= 'pix';
-      document.getElementById('inputParcelado').checked   = false;
-      document.getElementById('inputRecorrente').checked  = false;
+      document.getElementById('inputDescricao').value = '';
+      document.getElementById('inputValor').value = '';
+      document.getElementById('inputValorParcela').value = '';
+      document.getElementById('inputData').value = new Date().toISOString().split('T')[0];
+      document.getElementById('inputNatureza').value = 'variavel';
+      document.getElementById('inputPJ').value = 'nao';
+      document.getElementById('inputFormaPagamento').value = 'pix';
+      document.getElementById('inputParcelado').checked = false;
+      document.getElementById('inputRecorrente').checked = false;
       document.getElementById('grupoParcelas').style.display = 'none';
-      document.getElementById('grupoCartao').style.display   = 'none';
+      document.getElementById('grupoCartao').style.display = 'none';
       setTipo('entrada');
     }
 
@@ -478,18 +477,18 @@
         ?.classList.add(tipo === 'saida' ? 'active-saida' : tipo === 'investimento' ? 'active-invest' : 'active-entrada');
 
       // Categoria: oculta para Entrada
-      document.getElementById('grupoCategoria').style.display         = tipo === 'entrada' ? 'none' : '';
+      document.getElementById('grupoCategoria').style.display = tipo === 'entrada' ? 'none' : '';
       // Pagamento + parcelado + recorrente: só Saída
-      document.getElementById('grupoFormaPagamento').style.display    = tipo === 'saida' ? '' : 'none';
-      document.getElementById('grupoParcelado').style.display         = tipo === 'saida' ? '' : 'none';
-      document.getElementById('grupoRecorrente').style.display        = tipo === 'saida' ? '' : 'none';
+      document.getElementById('grupoFormaPagamento').style.display = tipo === 'saida' ? '' : 'none';
+      document.getElementById('grupoParcelado').style.display = tipo === 'saida' ? '' : 'none';
+      document.getElementById('grupoRecorrente').style.display = tipo === 'saida' ? '' : 'none';
       // PJ: só Entrada
-      document.getElementById('grupoPJFreelance').style.display       = tipo === 'entrada' ? '' : 'none';
+      document.getElementById('grupoPJFreelance').style.display = tipo === 'entrada' ? '' : 'none';
       // Destino: só Investimento
-      document.getElementById('grupoDestinoinvestimento').style.display= tipo === 'investimento' ? '' : 'none';
+      document.getElementById('grupoDestinoinvestimento').style.display = tipo === 'investimento' ? '' : 'none';
       // Valor principal: mostra sempre (exceto quando parcelado já marcado em Saída)
       const parceladoMarcado = tipo === 'saida' && document.getElementById('inputParcelado').checked;
-      document.getElementById('grupoValor').style.display             = parceladoMarcado ? 'none' : '';
+      document.getElementById('grupoValor').style.display = parceladoMarcado ? 'none' : '';
     };
 
     window.onFormaPagamentoChange = function () {
@@ -500,7 +499,7 @@
     window.onParceladoChange = function () {
       const checked = document.getElementById('inputParcelado').checked;
       document.getElementById('grupoParcelas').style.display = checked ? '' : 'none';
-      document.getElementById('grupoValor').style.display    = checked ? 'none' : '';
+      document.getElementById('grupoValor').style.display = checked ? 'none' : '';
       if (!checked) document.getElementById('inputValorParcela').value = '';
     };
 
@@ -511,27 +510,27 @@
 
     // ── Salvar ──
     window.salvarTransacao = async function () {
-      const tipo      = document.querySelector('.type-btn[class*="active-"]')?.dataset.tipo || 'entrada';
+      const tipo = document.querySelector('.type-btn[class*="active-"]')?.dataset.tipo || 'entrada';
       const descricao = document.getElementById('inputDescricao').value.trim();
-      const data      = document.getElementById('inputData').value;
-      const natureza  = document.getElementById('inputNatureza').value;
-      const isPJ      = tipo === 'entrada' ? document.getElementById('inputPJ').value : 'nao';
-      const recorrente= tipo === 'saida'   ? document.getElementById('inputRecorrente').checked : false;
+      const data = document.getElementById('inputData').value;
+      const natureza = document.getElementById('inputNatureza').value;
+      const isPJ = tipo === 'entrada' ? document.getElementById('inputPJ').value : 'nao';
+      const recorrente = tipo === 'saida' ? document.getElementById('inputRecorrente').checked : false;
       const categoria = tipo !== 'entrada' ? document.getElementById('inputCategoria').value : null;
       const destinoInvest = tipo === 'investimento' ? document.getElementById('inputDestinoInvest').value : null;
 
       if (!descricao) return showToast('Preencha a descrição', 'error');
-      if (!data)      return showToast('Informe a data', 'error');
+      if (!data) return showToast('Informe a data', 'error');
 
       // Parcelado — independente da forma de pagamento
       const parcelado = tipo === 'saida' && document.getElementById('inputParcelado').checked;
       let valor, valorParcela = null, totalParcelas = null, parcelaAtual = null;
 
       if (parcelado) {
-        valorParcela  = parseFloat(document.getElementById('inputValorParcela').value);
+        valorParcela = parseFloat(document.getElementById('inputValorParcela').value);
         totalParcelas = parseInt(document.getElementById('inputTotalParcelas').value) || 1;
-        parcelaAtual  = parseInt(document.getElementById('inputParcelaAtual').value) || 1;
-        valor         = valorParcela;
+        parcelaAtual = parseInt(document.getElementById('inputParcelaAtual').value) || 1;
+        valor = valorParcela;
         if (!valorParcela || valorParcela <= 0) return showToast('Informe o valor da parcela', 'error');
       } else {
         valor = parseFloat(document.getElementById('inputValor').value);
@@ -541,10 +540,10 @@
       // Forma de pagamento e status
       let formaPagamento = tipo === 'saida' ? document.getElementById('inputFormaPagamento').value : null;
       let cartaoId = null;
-      let status   = tipo === 'saida' ? 'pago' : null;
+      let status = tipo === 'saida' ? 'pago' : null;
       if (tipo === 'saida' && formaPagamento === 'cartao') {
         cartaoId = document.getElementById('inputCartao').value;
-        status   = 'pendente';
+        status = 'pendente';
       }
 
       const payload = {
@@ -561,16 +560,42 @@
           showToast('Transação atualizada!');
         } else {
           const novaRef = await addDoc(collection(db, 'transacoes'), payload);
-          // Espelha automaticamente na fatura do cartão
+          // Espelha na fatura do cartão + replica parcelas futuras
           if (tipo === 'saida' && formaPagamento === 'cartao' && cartaoId) {
-            await addDoc(collection(db, 'cartao_itens'), {
+            const itemBase = {
               transacaoId: novaRef.id,
               descricao, valor, data, categoria, cartaoId,
-              dono: 'eu', afetaSaldo: true,
-              parcelado, totalParcelas, parcelaAtual,
+              dono: 'eu', afetaSaldo: true, status: 'pendente',
+              parcelado, totalParcelas, parcelaAtual, valorParcela,
               mes: window.APP_MES,
               criadoEm: serverTimestamp()
-            });
+            };
+            // Salva mês atual
+            await addDoc(collection(db, 'cartao_itens'), itemBase);
+
+            // Replica parcelas futuras
+            if (parcelado && totalParcelas > 1) {
+              const [ano, mes] = window.APP_MES.split('-').map(Number);
+              for (let p = parcelaAtual + 1; p <= totalParcelas; p++) {
+                const d = new Date(ano, mes - 1 + (p - parcelaAtual), 1);
+                const mesFuturo = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                // Replica em transacoes (aparece nos resumos mensais futuros)
+                await addDoc(collection(db, 'transacoes'), {
+                  ...payload,
+                  parcelaAtual: p,
+                  mes: mesFuturo,
+                  criadoEm: serverTimestamp()
+                });
+                // Replica em cartao_itens (aparece na fatura futura)
+                await addDoc(collection(db, 'cartao_itens'), {
+                  ...itemBase,
+                  parcelaAtual: p,
+                  mes: mesFuturo,
+                  criadoEm: serverTimestamp()
+                });
+              }
+              showToast(`Compra salva com ${totalParcelas - parcelaAtual} parcelas futuras! ✓`);
+            }
           }
         }
         showToast(editandoId ? 'Transação atualizada!' : 'Transação salva!');
@@ -589,22 +614,22 @@
       editandoId = id;
       document.getElementById('modalTitulo').textContent = 'Editar Transação';
       setTipo(t.tipo);
-      document.getElementById('inputDescricao').value   = t.descricao || '';
-      document.getElementById('inputData').value        = t.data || '';
-      document.getElementById('inputNatureza').value    = t.natureza || 'variavel';
-      document.getElementById('inputPJ').value          = t.isPJ || 'nao';
-      document.getElementById('inputRecorrente').checked= t.recorrente || false;
+      document.getElementById('inputDescricao').value = t.descricao || '';
+      document.getElementById('inputData').value = t.data || '';
+      document.getElementById('inputNatureza').value = t.natureza || 'variavel';
+      document.getElementById('inputPJ').value = t.isPJ || 'nao';
+      document.getElementById('inputRecorrente').checked = t.recorrente || false;
       if (t.categoria) document.getElementById('inputCategoria').value = t.categoria;
       if (t.destinoInvest) document.getElementById('inputDestinoInvest').value = t.destinoInvest;
 
       if (t.parcelado) {
-        document.getElementById('inputParcelado').checked   = true;
+        document.getElementById('inputParcelado').checked = true;
         document.getElementById('grupoParcelas').style.display = '';
-        document.getElementById('grupoValor').style.display    = 'none';
-        document.getElementById('inputValorParcela').value  = t.valorParcela || t.valor || '';
+        document.getElementById('grupoValor').style.display = 'none';
+        document.getElementById('inputValorParcela').value = t.valorParcela || t.valor || '';
         document.getElementById('inputTotalParcelas').value = t.totalParcelas || '';
-        document.getElementById('inputParcelaAtual').value  = t.parcelaAtual || '';
-        document.getElementById('inputValor').value         = t.valor || '';
+        document.getElementById('inputParcelaAtual').value = t.parcelaAtual || '';
+        document.getElementById('inputValor').value = t.valor || '';
       } else {
         document.getElementById('inputValor').value = t.valor || '';
       }
@@ -636,4 +661,5 @@
   </script>
 
 </body>
+
 </html>

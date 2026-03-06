@@ -8,16 +8,13 @@
 </head>
 <body>
 
-  <!-- Loading -->
   <div id="loading" class="loading-overlay">
     <div class="spinner"></div>
     <div class="loading-text">Carregando...</div>
   </div>
 
-  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar"></aside>
 
-  <!-- Main -->
   <div class="main-wrapper">
 
     <header class="page-header">
@@ -28,67 +25,79 @@
       <div class="header-actions">
         <button class="btn-icon" id="btnTema" onclick="alternarTema()" title="Alternar tema">🌙</button>
         <button class="btn btn-ghost btn-sm" onclick="abrirModalCartao()">+ Novo Cartão</button>
-        <button class="btn btn-primary" onclick="abrirModalCompra()">+ Nova Compra</button>
+        <button class="btn btn-primary btn-sm" id="btnNovaCompra" onclick="abrirModalCompra()" style="display:none;">+ Compra de Terceiro</button>
       </div>
     </header>
 
     <main class="page-content">
 
-      <!-- Cards dos cartões cadastrados -->
-      <div id="listaCartoes" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px;"></div>
+      <!-- Cards dos cartões -->
+      <div id="listaCartoes" style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px;"></div>
 
-      <!-- Fatura do cartão selecionado -->
+      <!-- Fatura -->
       <div id="secaoFatura" style="display:none;">
 
-        <!-- Cabeçalho da fatura -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div id="faturaCorIndicador" style="width:12px;height:12px;border-radius:50%;"></div>
-            <div>
-              <div style="font-size:1rem;font-weight:700;" id="faturaNomeCartao">—</div>
-              <div style="font-size:0.78rem;color:var(--text-2);" id="faturaVencimento">Vence em —</div>
-            </div>
+        <!-- Totalizadores -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+          <div class="summary-card expense">
+            <div class="summary-label">Total Fatura</div>
+            <div class="summary-value" id="faturaTotal">R$ 0,00</div>
+            <div class="summary-sub">tudo incluído</div>
           </div>
-          <div style="display:flex;gap:10px;align-items:center;">
-            <div class="card-sm" style="text-align:center;min-width:140px;">
-              <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);">Total Fatura</div>
-              <div style="font-family:var(--mono);font-size:1.1rem;font-weight:500;color:var(--expense);margin-top:4px;" id="faturaTotal">R$ 0,00</div>
-            </div>
-            <div class="card-sm" style="text-align:center;min-width:140px;">
-              <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);">Meu Valor</div>
-              <div style="font-family:var(--mono);font-size:1.1rem;font-weight:500;color:var(--accent);margin-top:4px;" id="faturaValorMeu">R$ 0,00</div>
-            </div>
-            <div class="card-sm" style="text-align:center;min-width:140px;">
-              <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);">De Terceiros</div>
-              <div style="font-family:var(--mono);font-size:1.1rem;font-weight:500;color:var(--text-2);margin-top:4px;" id="faturaValorTerceiros">R$ 0,00</div>
-            </div>
-            <div class="card-sm" style="text-align:center;min-width:120px;">
-              <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);">Limite Usado</div>
-              <div style="font-size:0.82rem;font-weight:600;color:var(--warning);margin-top:4px;" id="faturaLimiteUsado">0%</div>
-            </div>
+          <div class="summary-card balance">
+            <div class="summary-label">Meu Valor</div>
+            <div class="summary-value" id="faturaValorMeu">R$ 0,00</div>
+            <div class="summary-sub">afeta seu saldo</div>
+          </div>
+          <div class="summary-card anterior">
+            <div class="summary-label">De Terceiros</div>
+            <div class="summary-value" id="faturaValorTerceiros">R$ 0,00</div>
+            <div class="summary-sub">pai + namorada</div>
+          </div>
+          <div class="summary-card invest">
+            <div class="summary-label">Limite Usado</div>
+            <div class="summary-value" id="faturaLimiteUsado">0%</div>
+            <div class="summary-sub" id="faturaLimiteSub">de R$ 0,00</div>
           </div>
         </div>
 
         <!-- Barra de limite -->
         <div style="margin-bottom:20px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-            <span style="font-size:0.75rem;color:var(--text-3);">Limite disponível</span>
-            <span style="font-size:0.75rem;color:var(--text-2);font-family:var(--mono);" id="faturaLimiteDisponivel">—</span>
-          </div>
           <div style="height:6px;background:var(--surface3);border-radius:99px;overflow:hidden;">
             <div id="faturaBarraLimite" style="height:100%;width:0%;background:var(--accent);border-radius:99px;transition:width 0.6s ease;"></div>
           </div>
         </div>
 
-        <!-- Filtro de dono -->
-        <div class="filters-bar" style="margin-bottom:16px;">
-          <button class="filter-chip active" onclick="setFiltroFatura('todos', this)">Todos</button>
-          <button class="filter-chip" onclick="setFiltroFatura('eu', this)">Minhas compras</button>
-          <button class="filter-chip" onclick="setFiltroFatura('pai', this)">Pai</button>
-          <button class="filter-chip" onclick="setFiltroFatura('namorada', this)">Namorada</button>
-          <div style="margin-left:auto;">
-            <input type="text" class="form-input" id="buscaFatura" placeholder="🔍  Buscar..." style="width:180px;padding:6px 12px;font-size:0.82rem;" oninput="filtrarFatura()">
+        <!-- Ações da fatura -->
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+
+          <!-- Filtros -->
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="filter-chip active" onclick="setFiltroFatura('todos',this)">Todos</button>
+            <button class="filter-chip" onclick="setFiltroFatura('eu',this)">Minhas</button>
+            <button class="filter-chip" onclick="setFiltroFatura('pai',this)">Pai</button>
+            <button class="filter-chip" onclick="setFiltroFatura('namorada',this)">Namorada</button>
+            <button class="filter-chip" onclick="setFiltroFatura('pendente',this)">Pendentes</button>
+            <button class="filter-chip" onclick="setFiltroFatura('pago',this)">Pagas</button>
           </div>
+
+          <!-- Botão quitar fatura -->
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" class="form-input" id="buscaFatura" placeholder="🔍 Buscar..."
+              style="width:170px;padding:6px 12px;font-size:0.82rem;" oninput="filtrarFatura()">
+            <button class="btn btn-ghost btn-sm" onclick="quitarFatura()"
+              style="border-color:var(--income);color:var(--income);">
+              ✓ Quitar Fatura
+            </button>
+          </div>
+        </div>
+
+        <!-- Nota informativa -->
+        <div style="background:var(--accent-dim);border:1px solid var(--border2);border-radius:var(--radius);padding:10px 16px;margin-bottom:16px;font-size:0.82rem;color:var(--text-2);">
+          💡 <strong style="color:var(--accent);">Suas compras</strong> são registradas em
+          <a href="transacoes.html" style="color:var(--accent);font-weight:700;">Transações</a>
+          escolhendo o cartão como forma de pagamento.
+          Use <strong style="color:var(--text);">"+ Compra de Terceiro"</strong> para registrar compras do pai ou namorada no seu cartão.
         </div>
 
         <!-- Tabela da fatura -->
@@ -96,21 +105,23 @@
           <table>
             <thead>
               <tr>
+                <th style="width:36px;"></th>
                 <th>Descrição</th>
-                <th>Valor</th>
+                <th>Valor Parcela</th>
                 <th>Data</th>
                 <th>Categoria</th>
                 <th>Parcelas</th>
                 <th>De quem</th>
-                <th style="width:70px;"></th>
+                <th>Status</th>
+                <th style="width:90px;"></th>
               </tr>
             </thead>
             <tbody id="corpoFatura">
-              <tr><td colspan="7">
+              <tr><td colspan="9">
                 <div class="empty-state">
                   <div class="empty-icon">💳</div>
                   <div class="empty-title">Nenhuma compra nesta fatura</div>
-                  <div class="empty-desc">Clique em "+ Nova Compra" para adicionar</div>
+                  <div class="empty-desc">Registre em Transações ou adicione uma compra de terceiro</div>
                 </div>
               </td></tr>
             </tbody>
@@ -119,7 +130,7 @@
 
       </div>
 
-      <!-- Estado vazio (sem cartões) -->
+      <!-- Sem cartões -->
       <div id="semCartoes" class="empty-state" style="padding:80px 24px;">
         <div class="empty-icon">💳</div>
         <div class="empty-title">Nenhum cartão cadastrado</div>
@@ -141,7 +152,6 @@
         <label class="form-label">Nome do Cartão</label>
         <input type="text" class="form-input" id="inputCartaoNome" placeholder="Ex: Nubank, Inter Gold...">
       </div>
-
       <div class="form-row cols-2">
         <div class="form-group">
           <label class="form-label">Limite Total (R$)</label>
@@ -152,7 +162,6 @@
           <input type="number" class="form-input" id="inputCartaoVencimento" placeholder="Ex: 10" min="1" max="31">
         </div>
       </div>
-
       <div class="form-row cols-2">
         <div class="form-group">
           <label class="form-label">Dia de Fechamento</label>
@@ -160,11 +169,10 @@
         </div>
         <div class="form-group">
           <label class="form-label">Cor de Identificação</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;" id="seletorCores"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;" id="seletorCores"></div>
           <input type="hidden" id="inputCartaoCor" value="#8b5cf6">
         </div>
       </div>
-
       <div style="display:flex;gap:10px;margin-top:8px;">
         <button class="btn btn-ghost" style="flex:1;" onclick="fecharModalCartao()">Cancelar</button>
         <button class="btn btn-primary" style="flex:2;" onclick="salvarCartao()">Salvar Cartão</button>
@@ -172,22 +180,29 @@
     </div>
   </div>
 
-  <!-- ── MODAL NOVA COMPRA ── -->
+  <!-- ── MODAL COMPRA DE TERCEIRO ── -->
   <div class="modal-overlay" id="modalCompra">
-    <div class="modal" style="max-width:520px;">
+    <div class="modal" style="max-width:500px;">
       <div class="modal-header">
-        <div class="modal-title" id="modalCompraTitulo">Nova Compra na Fatura</div>
+        <div class="modal-title" id="modalCompraTitulo">Compra de Terceiro</div>
         <button class="modal-close" onclick="fecharModalCompra()">✕</button>
+      </div>
+
+      <div style="background:var(--warning-bg);border:1px solid rgba(251,191,36,0.3);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:0.82rem;color:var(--warning);">
+        ⚠️ Use este formulário apenas para registrar compras do <strong>pai</strong> ou <strong>namorada</strong> feitas no seu cartão. Estas compras <strong>não afetam seu saldo</strong>.
       </div>
 
       <div class="form-row cols-2">
         <div class="form-group">
           <label class="form-label">Descrição</label>
-          <input type="text" class="form-input" id="inputCompraNome" placeholder="Ex: Mercado, Roupa...">
+          <input type="text" class="form-input" id="inputCompraNome" placeholder="Ex: Supermercado...">
         </div>
         <div class="form-group">
-          <label class="form-label">Valor (R$)</label>
-          <input type="number" class="form-input" id="inputCompraValor" placeholder="0,00" step="0.01" min="0">
+          <label class="form-label">De quem é a compra?</label>
+          <select class="form-input" id="inputCompraDono">
+            <option value="pai">Pai</option>
+            <option value="namorada">Namorada</option>
+          </select>
         </div>
       </div>
 
@@ -202,37 +217,32 @@
         </div>
       </div>
 
-      <div class="form-row cols-2">
-        <div class="form-group">
-          <label class="form-label">Cartão</label>
-          <select class="form-input" id="inputCompraCartao"></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">De quem é a compra?</label>
-          <select class="form-input" id="inputCompraDono">
-            <option value="eu">Minha compra</option>
-            <option value="pai">Pai</option>
-            <option value="namorada">Namorada</option>
-          </select>
-        </div>
-      </div>
-
       <!-- Parcelado -->
       <div class="form-group">
         <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-2);cursor:pointer;">
-          <input type="checkbox" id="inputCompraParcelado" onchange="onCompraParceladoChange()" style="accent-color:var(--accent);width:15px;height:15px;">
+          <input type="checkbox" id="inputCompraParcelado" onchange="onCompraParceladoChange()"
+            style="accent-color:var(--accent);width:15px;height:15px;">
           Compra parcelada
         </label>
       </div>
 
-      <div class="form-row cols-2" id="grupoCompraParc" style="display:none;">
+      <div id="grupoCompraValor" class="form-group">
+        <label class="form-label">Valor Total (R$)</label>
+        <input type="number" class="form-input" id="inputCompraValor" placeholder="0,00" step="0.01" min="0">
+      </div>
+
+      <div class="form-row cols-3" id="grupoCompraParc" style="display:none;">
         <div class="form-group">
-          <label class="form-label">Total de Parcelas</label>
-          <input type="number" class="form-input" id="inputCompraTotalParc" placeholder="Ex: 6" min="2" max="60">
+          <label class="form-label">Valor da Parcela (R$)</label>
+          <input type="number" class="form-input" id="inputCompraValorParcela" placeholder="Ex: 100,00" step="0.01" min="0">
         </div>
         <div class="form-group">
           <label class="form-label">Parcela Atual</label>
           <input type="number" class="form-input" id="inputCompraParcelaAtual" placeholder="Ex: 1" min="1" max="60">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Total Parcelas</label>
+          <input type="number" class="form-input" id="inputCompraTotalParc" placeholder="Ex: 6" min="2" max="60">
         </div>
       </div>
 
@@ -243,7 +253,6 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div id="toast" class="toast"></div>
 
 <script type="module">
@@ -253,35 +262,32 @@
   } from './firebase.js';
   import {
     renderSidebar, formatBRL, formatDate, formatMonthYear,
-    getMesAtual, CATEGORIAS, CATEGORIAS_MAP, hideLoading, showToast
+    getMesAtual, navegarMes, CATEGORIAS, CATEGORIAS_MAP,
+    hideLoading, showToast
   } from './app.js';
 
   // ── Estado ──
-  window.APP_MES   = getMesAtual();
-  let cartoes      = [];
-  let compras      = [];
-  let cartaoAtivo  = null;
-  let filtroFatura = 'todos';
+  window.APP_MES  = getMesAtual();
+  let cartoes     = [];
+  let itens       = [];   // cartao_itens do mês atual
+  let cartaoAtivo = null;
+  let filtroFatura= 'todos';
+  let editandoCartaoId = null;
   let editandoCompraId = null;
 
-  const CORES = [
-    '#8b5cf6','#f97316','#3b82f6','#10b981',
-    '#ec4899','#f43f5e','#fbbf24','#6b7280'
-  ];
+  const CORES = ['#8b5cf6','#f97316','#3b82f6','#10b981','#ec4899','#f43f5e','#fbbf24','#6b7280'];
 
   // ── Init ──
+  aplicarTema();
   renderSidebar('cartao', window.APP_MES, (mes) => {
     window.APP_MES = mes;
     document.getElementById('headerMes').textContent = '— ' + formatMonthYear(mes);
-    carregarCompras();
+    carregarItens();
   });
-
   document.getElementById('headerMes').textContent = '— ' + formatMonthYear(window.APP_MES);
-  aplicarTema();
   preencherCategorias();
   renderSeletorCores();
   await carregarCartoes();
-  await carregarCompras();
   hideLoading();
 
   // ── Tema ──
@@ -291,7 +297,6 @@
     const btn = document.getElementById('btnTema');
     if (btn) btn.textContent = tema === 'light' ? '🌙' : '☀️';
   }
-
   window.alternarTema = function() {
     const novo = localStorage.getItem('tema') === 'light' ? 'dark' : 'light';
     localStorage.setItem('tema', novo);
@@ -300,24 +305,18 @@
 
   // ── Categorias ──
   function preencherCategorias() {
-    const sel = document.getElementById('inputCompraCategoria');
-    sel.innerHTML = CATEGORIAS.map(c =>
-      `<option value="${c.value}">${c.icon} ${c.label}</option>`
-    ).join('');
+    document.getElementById('inputCompraCategoria').innerHTML =
+      CATEGORIAS.map(c => `<option value="${c.value}">${c.icon} ${c.label}</option>`).join('');
   }
 
   // ── Seletor de cores ──
-  function renderSeletorCores(corSelecionada = '#8b5cf6') {
-    const el = document.getElementById('seletorCores');
-    el.innerHTML = CORES.map(cor => `
-      <div onclick="selecionarCor('${cor}')"
-        style="width:22px;height:22px;border-radius:50%;background:${cor};cursor:pointer;
-               border:3px solid ${cor === corSelecionada ? '#fff' : 'transparent'};
-               transition:border-color 0.15s;" id="cor-${cor.replace('#','')}">
-      </div>
-    `).join('');
+  function renderSeletorCores(sel = '#8b5cf6') {
+    document.getElementById('seletorCores').innerHTML = CORES.map(cor => `
+      <div onclick="selecionarCor('${cor}')" style="
+        width:22px;height:22px;border-radius:50%;background:${cor};cursor:pointer;
+        border:3px solid ${cor === sel ? '#fff' : 'transparent'};transition:border-color 0.15s;">
+      </div>`).join('');
   }
-
   window.selecionarCor = function(cor) {
     document.getElementById('inputCartaoCor').value = cor;
     renderSeletorCores(cor);
@@ -328,193 +327,174 @@
     try {
       const snap = await getDocs(collection(db, 'cartoes'));
       cartoes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderCartoesUI();
-      preencherSelectCartoes();
     } catch(e) { console.error(e); }
+    renderCartoesUI();
+    if (cartoes.length) await selecionarCartao(cartoes[0].id);
   }
 
   function renderCartoesUI() {
     const el = document.getElementById('listaCartoes');
-    const semCartoes = document.getElementById('semCartoes');
-
     if (!cartoes.length) {
-      el.innerHTML = '';
-      semCartoes.style.display = '';
+      document.getElementById('semCartoes').style.display = '';
       document.getElementById('secaoFatura').style.display = 'none';
+      document.getElementById('btnNovaCompra').style.display = 'none';
+      el.innerHTML = '';
       return;
     }
-
-    semCartoes.style.display = 'none';
+    document.getElementById('semCartoes').style.display = 'none';
 
     el.innerHTML = cartoes.map(c => {
-      const isAtivo = cartaoAtivo?.id === c.id;
+      const ativo = cartaoAtivo?.id === c.id;
       return `
-        <div onclick="selecionarCartao('${c.id}')"
-          style="
-            background:var(--surface);
-            border:2px solid ${isAtivo ? c.cor : 'var(--border)'};
-            border-radius:var(--radius-lg);
-            padding:18px 22px;
-            cursor:pointer;
-            min-width:200px;
-            transition:all 0.2s;
-            position:relative;
-            overflow:hidden;
-          ">
+        <div onclick="selecionarCartao('${c.id}')" style="
+          background:var(--surface);
+          border:2px solid ${ativo ? c.cor : 'var(--border)'};
+          border-radius:var(--radius-lg);padding:16px 20px;
+          cursor:pointer;min-width:190px;transition:all 0.2s;position:relative;overflow:hidden;">
           <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${c.cor};"></div>
-          <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);margin-bottom:8px;">
-            ${isAtivo ? '● Selecionado' : '○ Selecionar'}
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+            color:${ativo ? c.cor : 'var(--text-3)'};margin-bottom:6px;">
+            ${ativo ? '● Selecionado' : '○ Selecionar'}
           </div>
-          <div style="font-size:1rem;font-weight:700;color:var(--text);">${c.nome}</div>
-          <div style="font-size:0.78rem;color:var(--text-2);margin-top:4px;">
+          <div style="font-size:0.95rem;font-weight:700;">${c.nome}</div>
+          <div style="font-size:0.75rem;color:var(--text-2);margin-top:3px;">
             Limite: <span style="font-family:var(--mono);">${formatBRL(c.limite)}</span>
           </div>
-          <div style="font-size:0.75rem;color:var(--text-3);margin-top:2px;">
+          <div style="font-size:0.72rem;color:var(--text-3);margin-top:2px;">
             Vence dia ${c.vencimento} · Fecha dia ${c.fechamento}
           </div>
           <button onclick="event.stopPropagation();editarCartao('${c.id}')"
-            style="position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text-3);font-size:0.8rem;cursor:pointer;padding:4px;">
-            ✎
-          </button>
-        </div>
-      `;
+            style="position:absolute;top:8px;right:8px;background:none;border:none;
+            color:var(--text-3);font-size:0.8rem;cursor:pointer;padding:4px;">✎</button>
+        </div>`;
     }).join('');
-
-    // Seleciona o primeiro se nenhum ativo
-    if (!cartaoAtivo && cartoes.length) {
-      selecionarCartao(cartoes[0].id);
-    }
-  }
-
-  function preencherSelectCartoes() {
-    const sel = document.getElementById('inputCompraCartao');
-    sel.innerHTML = cartoes.length
-      ? cartoes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')
-      : '<option value="">Nenhum cartão</option>';
   }
 
   // ── Seleciona cartão ──
-  window.selecionarCartao = function(id) {
+  window.selecionarCartao = async function(id) {
     cartaoAtivo = cartoes.find(c => c.id === id) || null;
     renderCartoesUI();
-    renderFatura();
+    if (cartaoAtivo) {
+      document.getElementById('btnNovaCompra').style.display = '';
+      await carregarItens();
+    }
   };
 
-  // ── Carrega compras ──
-  async function carregarCompras() {
+  // ── Carrega itens da fatura (do mês) ──
+  async function carregarItens() {
     if (!cartaoAtivo) return;
     try {
-      const q = query(
+      const snap = await getDocs(query(
         collection(db, 'cartao_itens'),
         where('cartaoId', '==', cartaoAtivo.id),
         where('mes', '==', window.APP_MES)
-      );
-      const snap = await getDocs(q);
-      compras = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      ));
+      itens = snap.docs.map(d => ({ id: d.id, ...d.data() }))
         .sort((a, b) => (b.data || '').localeCompare(a.data || ''));
-      renderFatura();
-    } catch(e) { console.error(e); }
+    } catch(e) {
+      console.error(e);
+      itens = [];
+    }
+    renderFatura();
   }
 
-  // ── Render fatura ──
+  // ── Renderiza fatura ──
   function renderFatura() {
-    if (!cartaoAtivo) return;
     document.getElementById('secaoFatura').style.display = '';
-    document.getElementById('faturaNomeCartao').textContent = cartaoAtivo.nome;
-    document.getElementById('faturaCorIndicador').style.background = cartaoAtivo.cor;
-    document.getElementById('faturaVencimento').textContent =
-      `Vence dia ${cartaoAtivo.vencimento} · Fecha dia ${cartaoAtivo.fechamento}`;
 
-    // Totais
     let totalFatura = 0, totalMeu = 0, totalTerceiros = 0;
-    compras.forEach(c => {
-      totalFatura += c.valor;
-      if (c.dono === 'eu') totalMeu += c.valor;
-      else totalTerceiros += c.valor;
+    itens.forEach(i => {
+      const v = i.valor || 0;
+      totalFatura += v;
+      if (i.dono === 'eu') totalMeu += v;
+      else totalTerceiros += v;
     });
 
-    document.getElementById('faturaTotal').textContent       = formatBRL(totalFatura);
-    document.getElementById('faturaValorMeu').textContent    = formatBRL(totalMeu);
-    document.getElementById('faturaValorTerceiros').textContent = formatBRL(totalTerceiros);
+    document.getElementById('faturaTotal').textContent         = formatBRL(totalFatura);
+    document.getElementById('faturaValorMeu').textContent      = formatBRL(totalMeu);
+    document.getElementById('faturaValorTerceiros').textContent= formatBRL(totalTerceiros);
 
-    // Limite
-    const limite = cartaoAtivo.limite || 0;
-    const pctUsado = limite > 0 ? Math.min(100, Math.round((totalMeu / limite) * 100)) : 0;
-    document.getElementById('faturaLimiteUsado').textContent = `${pctUsado}%`;
-    document.getElementById('faturaLimiteDisponivel').textContent =
-      `${formatBRL(totalMeu)} usado de ${formatBRL(limite)}`;
+    const limite  = cartaoAtivo?.limite || 0;
+    const pct     = limite > 0 ? Math.min(100, Math.round((totalMeu / limite) * 100)) : 0;
+    document.getElementById('faturaLimiteUsado').textContent = `${pct}%`;
+    document.getElementById('faturaLimiteSub').textContent   = `de ${formatBRL(limite)}`;
     const barra = document.getElementById('faturaBarraLimite');
-    barra.style.width = `${pctUsado}%`;
-    barra.style.background = pctUsado > 80 ? 'var(--expense)' : pctUsado > 60 ? 'var(--warning)' : 'var(--accent)';
+    barra.style.width      = `${pct}%`;
+    barra.style.background = pct > 80 ? 'var(--expense)' : pct > 60 ? 'var(--warning)' : 'var(--accent)';
 
     filtrarFatura();
   }
 
+  // ── Filtro da fatura ──
   window.filtrarFatura = function() {
     const busca = (document.getElementById('buscaFatura')?.value || '').toLowerCase();
-    let lista = [...compras];
-
-    if (filtroFatura === 'eu')       lista = lista.filter(c => c.dono === 'eu');
-    else if (filtroFatura === 'pai') lista = lista.filter(c => c.dono === 'pai');
-    else if (filtroFatura === 'namorada') lista = lista.filter(c => c.dono === 'namorada');
-
-    if (busca) lista = lista.filter(c =>
-      (c.descricao||'').toLowerCase().includes(busca)
-    );
+    let lista = [...itens];
+    if (filtroFatura === 'eu')        lista = lista.filter(i => i.dono === 'eu');
+    else if (filtroFatura === 'pai')  lista = lista.filter(i => i.dono === 'pai');
+    else if (filtroFatura === 'namorada') lista = lista.filter(i => i.dono === 'namorada');
+    else if (filtroFatura === 'pendente') lista = lista.filter(i => i.status !== 'pago');
+    else if (filtroFatura === 'pago') lista = lista.filter(i => i.status === 'pago');
+    if (busca) lista = lista.filter(i => (i.descricao||'').toLowerCase().includes(busca));
 
     const tbody = document.getElementById('corpoFatura');
     if (!lista.length) {
-      tbody.innerHTML = `<tr><td colspan="7">
-        <div class="empty-state">
-          <div class="empty-icon">💳</div>
-          <div class="empty-title">Nenhuma compra encontrada</div>
-          <div class="empty-desc">Tente outro filtro ou adicione uma compra</div>
-        </div>
-      </td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state">
+        <div class="empty-icon">💳</div>
+        <div class="empty-title">Nenhuma compra encontrada</div>
+        <div class="empty-desc">Tente outro filtro</div>
+      </div></td></tr>`;
       return;
     }
 
     const donoLabel = { eu: 'Minha', pai: 'Pai', namorada: 'Namorada' };
     const donoColor = { eu: 'var(--accent)', pai: 'var(--warning)', namorada: 'var(--invest)' };
 
-    tbody.innerHTML = lista.map(c => {
-      const cat = CATEGORIAS_MAP[c.categoria];
-      const isTerceiro = c.dono !== 'eu';
-      const parcelaInfo = c.parcelado
-        ? `<span class="badge badge-fixed" style="margin-left:6px;">${c.parcelaAtual}/${c.totalParcelas}</span>`
-        : '<span style="color:var(--text-3);font-size:0.78rem;">—</span>';
+    tbody.innerHTML = lista.map(i => {
+      const cat       = CATEGORIAS_MAP[i.categoria];
+      const isTerceiro= i.dono !== 'eu';
+      const pago      = i.status === 'pago';
+      const parcelaInfo = i.parcelado
+        ? `${i.parcelaAtual}/${i.totalParcelas}`
+        : '—';
 
       return `
-        <tr style="${isTerceiro ? 'opacity:0.75;' : ''}" class="fade-up">
+        <tr style="${isTerceiro ? 'opacity:0.8;' : ''}" class="fade-up">
+          <td style="text-align:center;font-size:1rem;">${cat?.icon || '📦'}</td>
           <td>
-            <div style="font-weight:500;">${c.descricao}</div>
-            ${isTerceiro ? `<div style="font-size:0.68rem;color:var(--text-3);">não afeta seu saldo</div>` : ''}
+            <div style="font-weight:500;${pago ? 'text-decoration:line-through;color:var(--text-3);' : ''}">
+              ${i.descricao}
+            </div>
+            ${isTerceiro ? '<div style="font-size:0.68rem;color:var(--text-3);">não afeta seu saldo</div>' : ''}
           </td>
           <td>
-            <span style="font-family:var(--mono);font-weight:500;color:${isTerceiro ? 'var(--text-2)' : 'var(--expense)'};">
-              ${formatBRL(c.valor)}
+            <span style="font-family:var(--mono);font-weight:500;
+              color:${pago ? 'var(--text-3)' : isTerceiro ? 'var(--text-2)' : 'var(--expense)'};">
+              ${formatBRL(i.valor)}
             </span>
           </td>
-          <td style="color:var(--text-2);font-size:0.82rem;">${formatDate(c.data)}</td>
-          <td style="font-size:0.8rem;">${cat?.icon || ''} ${cat?.label || c.categoria || '—'}</td>
-          <td>${parcelaInfo}</td>
+          <td style="color:var(--text-2);font-size:0.82rem;">${formatDate(i.data)}</td>
+          <td style="font-size:0.8rem;">${cat?.label || i.categoria || '—'}</td>
+          <td style="font-size:0.82rem;color:var(--text-2);">${parcelaInfo}</td>
           <td>
-            <span style="
-              display:inline-flex;align-items:center;gap:5px;
-              padding:3px 10px;border-radius:99px;font-size:0.72rem;font-weight:700;
-              background:${donoColor[c.dono]}18;color:${donoColor[c.dono]};
-            ">
-              ${c.dono === 'eu' ? '👤' : '👥'} ${donoLabel[c.dono] || c.dono}
+            <span style="padding:3px 10px;border-radius:99px;font-size:0.72rem;font-weight:700;
+              background:${donoColor[i.dono]}18;color:${donoColor[i.dono]};">
+              ${i.dono === 'eu' ? '👤' : '👥'} ${donoLabel[i.dono] || i.dono}
+            </span>
+          </td>
+          <td>
+            <span class="badge ${pago ? 'badge-paid' : 'badge-pending'}" style="cursor:pointer;"
+              onclick="togglePago('${i.id}', ${pago})" title="Clique para alternar status">
+              ${pago ? '✓ Pago' : '⏳ Pendente'}
             </span>
           </td>
           <td>
             <div style="display:flex;gap:4px;">
-              <button class="btn-icon" title="Editar" onclick="editarCompra('${c.id}')">✎</button>
-              <button class="btn-icon" title="Excluir" onclick="excluirCompra('${c.id}')" style="color:var(--expense);">✕</button>
+              ${isTerceiro ? `<button class="btn-icon" title="Editar" onclick="editarCompra('${i.id}')">✎</button>` : ''}
+              ${isTerceiro ? `<button class="btn-icon" title="Excluir" onclick="excluirCompra('${i.id}')" style="color:var(--expense);">✕</button>` : ''}
+              ${!isTerceiro ? `<span style="font-size:0.72rem;color:var(--text-3);">via TX</span>` : ''}
             </div>
           </td>
-        </tr>
-      `;
+        </tr>`;
     }).join('');
   };
 
@@ -525,21 +505,47 @@
     filtrarFatura();
   };
 
-  // ── Modal Cartão ──
-  let editandoCartaoId = null;
+  // ── Marcar item individualmente como pago/pendente ──
+  window.togglePago = async function(id, estaPago) {
+    try {
+      await updateDoc(doc(db, 'cartao_itens', id), {
+        status: estaPago ? 'pendente' : 'pago'
+      });
+      showToast(estaPago ? 'Marcado como pendente' : 'Marcado como pago ✓');
+      await carregarItens();
+    } catch(e) {
+      showToast('Erro ao atualizar status', 'error');
+    }
+  };
 
+  // ── Quitar fatura inteira ──
+  window.quitarFatura = async function() {
+    const pendentes = itens.filter(i => i.status !== 'pago' && i.dono === 'eu');
+    if (!pendentes.length) return showToast('Nenhuma compra pendente sua nesta fatura', 'warning');
+    if (!confirm(`Marcar ${pendentes.length} compra(s) como pagas?`)) return;
+    try {
+      await Promise.all(pendentes.map(i =>
+        updateDoc(doc(db, 'cartao_itens', i.id), { status: 'pago' })
+      ));
+      showToast(`${pendentes.length} compra(s) quitadas ✓`);
+      await carregarItens();
+    } catch(e) {
+      showToast('Erro ao quitar fatura', 'error');
+    }
+  };
+
+  // ── Modal Cartão ──
   window.abrirModalCartao = function() {
     editandoCartaoId = null;
     document.getElementById('modalCartaoTitulo').textContent = 'Novo Cartão';
-    document.getElementById('inputCartaoNome').value = '';
-    document.getElementById('inputCartaoLimite').value = '';
-    document.getElementById('inputCartaoVencimento').value = '';
-    document.getElementById('inputCartaoFechamento').value = '';
-    document.getElementById('inputCartaoCor').value = '#8b5cf6';
+    document.getElementById('inputCartaoNome').value      = '';
+    document.getElementById('inputCartaoLimite').value    = '';
+    document.getElementById('inputCartaoVencimento').value= '';
+    document.getElementById('inputCartaoFechamento').value= '';
+    document.getElementById('inputCartaoCor').value       = '#8b5cf6';
     renderSeletorCores('#8b5cf6');
     document.getElementById('modalCartao').classList.add('open');
   };
-
   window.fecharModalCartao = function() {
     document.getElementById('modalCartao').classList.remove('open');
   };
@@ -564,14 +570,11 @@
     const vencimento = parseInt(document.getElementById('inputCartaoVencimento').value);
     const fechamento = parseInt(document.getElementById('inputCartaoFechamento').value);
     const cor        = document.getElementById('inputCartaoCor').value;
-
     if (!nome)       return showToast('Informe o nome do cartão', 'error');
     if (!limite)     return showToast('Informe o limite', 'error');
     if (!vencimento) return showToast('Informe o dia de vencimento', 'error');
     if (!fechamento) return showToast('Informe o dia de fechamento', 'error');
-
     const payload = { nome, limite, vencimento, fechamento, cor };
-
     try {
       if (editandoCartaoId) {
         await updateDoc(doc(db, 'cartoes', editandoCartaoId), payload);
@@ -582,93 +585,120 @@
       }
       fecharModalCartao();
       await carregarCartoes();
-    } catch(e) {
-      showToast('Erro ao salvar cartão', 'error');
-    }
+    } catch(e) { showToast('Erro ao salvar cartão', 'error'); }
   };
 
-  // ── Modal Compra ──
+  // ── Modal Compra de Terceiro ──
   window.abrirModalCompra = function() {
     if (!cartaoAtivo) return showToast('Selecione um cartão primeiro', 'warning');
     editandoCompraId = null;
-    document.getElementById('modalCompraTitulo').textContent = 'Nova Compra na Fatura';
-    document.getElementById('inputCompraNome').value = '';
-    document.getElementById('inputCompraValor').value = '';
-    document.getElementById('inputCompraData').value = new Date().toISOString().split('T')[0];
-    document.getElementById('inputCompraCategoria').value = CATEGORIAS[0].value;
-    document.getElementById('inputCompraDono').value = 'eu';
-    document.getElementById('inputCompraParcelado').checked = false;
-    document.getElementById('grupoCompraParc').style.display = 'none';
-    // Pré-seleciona o cartão ativo
-    document.getElementById('inputCompraCartao').value = cartaoAtivo.id;
+    document.getElementById('modalCompraTitulo').textContent = 'Compra de Terceiro';
+    document.getElementById('inputCompraNome').value         = '';
+    document.getElementById('inputCompraValor').value        = '';
+    document.getElementById('inputCompraValorParcela').value = '';
+    document.getElementById('inputCompraData').value         = new Date().toISOString().split('T')[0];
+    document.getElementById('inputCompraCategoria').value    = CATEGORIAS[0].value;
+    document.getElementById('inputCompraDono').value         = 'pai';
+    document.getElementById('inputCompraParcelado').checked  = false;
+    document.getElementById('grupoCompraParc').style.display  = 'none';
+    document.getElementById('grupoCompraValor').style.display = '';
     document.getElementById('modalCompra').classList.add('open');
   };
-
   window.fecharModalCompra = function() {
     document.getElementById('modalCompra').classList.remove('open');
   };
 
   window.onCompraParceladoChange = function() {
     const checked = document.getElementById('inputCompraParcelado').checked;
-    document.getElementById('grupoCompraParc').style.display = checked ? '' : 'none';
+    document.getElementById('grupoCompraParc').style.display  = checked ? '' : 'none';
+    document.getElementById('grupoCompraValor').style.display = checked ? 'none' : '';
   };
 
   window.salvarCompra = async function() {
     const descricao  = document.getElementById('inputCompraNome').value.trim();
-    const valor      = parseFloat(document.getElementById('inputCompraValor').value);
     const data       = document.getElementById('inputCompraData').value;
     const categoria  = document.getElementById('inputCompraCategoria').value;
-    const cartaoId   = document.getElementById('inputCompraCartao').value;
     const dono       = document.getElementById('inputCompraDono').value;
     const parcelado  = document.getElementById('inputCompraParcelado').checked;
 
     if (!descricao) return showToast('Informe a descrição', 'error');
-    if (!valor || valor <= 0) return showToast('Informe um valor válido', 'error');
-    if (!data) return showToast('Informe a data', 'error');
+    if (!data)      return showToast('Informe a data', 'error');
+
+    let valor, valorParcela = null, totalParcelas = null, parcelaAtual = null;
+    if (parcelado) {
+      valorParcela  = parseFloat(document.getElementById('inputCompraValorParcela').value);
+      totalParcelas = parseInt(document.getElementById('inputCompraTotalParc').value) || 1;
+      parcelaAtual  = parseInt(document.getElementById('inputCompraParcelaAtual').value) || 1;
+      valor         = valorParcela;
+      if (!valorParcela || valorParcela <= 0) return showToast('Informe o valor da parcela', 'error');
+    } else {
+      valor = parseFloat(document.getElementById('inputCompraValor').value);
+      if (!valor || valor <= 0) return showToast('Informe um valor válido', 'error');
+    }
 
     const payload = {
-      descricao, valor, data, categoria, cartaoId, dono, parcelado,
-      afetaSaldo: dono === 'eu',
-      mes: window.APP_MES,
-      criadoEm: serverTimestamp()
+      descricao, valor, valorParcela, data, categoria,
+      cartaoId:   cartaoAtivo.id,
+      dono,
+      afetaSaldo: false,
+      parcelado,  totalParcelas, parcelaAtual,
+      status:     'pendente',
+      mes:        window.APP_MES,
+      criadoEm:   serverTimestamp()
     };
-
-    if (parcelado) {
-      payload.totalParcelas = parseInt(document.getElementById('inputCompraTotalParc').value) || 1;
-      payload.parcelaAtual  = parseInt(document.getElementById('inputCompraParcelaAtual').value) || 1;
-    }
 
     try {
       if (editandoCompraId) {
         await updateDoc(doc(db, 'cartao_itens', editandoCompraId), payload);
         showToast('Compra atualizada!');
       } else {
+        // Salva mês atual
         await addDoc(collection(db, 'cartao_itens'), payload);
-        showToast('Compra adicionada!');
+
+        // Replica parcelas futuras
+        if (parcelado && totalParcelas > 1) {
+          const [ano, mes] = window.APP_MES.split('-').map(Number);
+          for (let p = parcelaAtual + 1; p <= totalParcelas; p++) {
+            const d = new Date(ano, mes - 1 + (p - parcelaAtual), 1);
+            const mesFuturo = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+            await addDoc(collection(db, 'cartao_itens'), {
+              ...payload,
+              parcelaAtual: p,
+              mes: mesFuturo,
+              criadoEm: serverTimestamp()
+            });
+          }
+          showToast(`Compra salva com ${totalParcelas - parcelaAtual} parcelas futuras!`);
+        } else {
+          showToast('Compra adicionada!');
+        }
       }
       fecharModalCompra();
-      await carregarCompras();
+      await carregarItens();
     } catch(e) {
+      console.error(e);
       showToast('Erro ao salvar compra', 'error');
     }
   };
 
   window.editarCompra = function(id) {
-    const c = compras.find(x => x.id === id);
-    if (!c) return;
+    const i = itens.find(x => x.id === id);
+    if (!i) return;
     editandoCompraId = id;
-    document.getElementById('modalCompraTitulo').textContent = 'Editar Compra';
-    document.getElementById('inputCompraNome').value         = c.descricao || '';
-    document.getElementById('inputCompraValor').value        = c.valor || '';
-    document.getElementById('inputCompraData').value         = c.data || '';
-    document.getElementById('inputCompraCategoria').value    = c.categoria || '';
-    document.getElementById('inputCompraCartao').value       = c.cartaoId || '';
-    document.getElementById('inputCompraDono').value         = c.dono || 'eu';
-    document.getElementById('inputCompraParcelado').checked  = c.parcelado || false;
-    if (c.parcelado) {
-      document.getElementById('grupoCompraParc').style.display = '';
-      document.getElementById('inputCompraTotalParc').value    = c.totalParcelas || '';
-      document.getElementById('inputCompraParcelaAtual').value = c.parcelaAtual || '';
+    document.getElementById('modalCompraTitulo').textContent    = 'Editar Compra';
+    document.getElementById('inputCompraNome').value            = i.descricao || '';
+    document.getElementById('inputCompraData').value            = i.data || '';
+    document.getElementById('inputCompraCategoria').value       = i.categoria || '';
+    document.getElementById('inputCompraDono').value            = i.dono || 'pai';
+    document.getElementById('inputCompraParcelado').checked     = i.parcelado || false;
+    if (i.parcelado) {
+      document.getElementById('grupoCompraParc').style.display   = '';
+      document.getElementById('grupoCompraValor').style.display  = 'none';
+      document.getElementById('inputCompraValorParcela').value   = i.valorParcela || i.valor || '';
+      document.getElementById('inputCompraTotalParc').value      = i.totalParcelas || '';
+      document.getElementById('inputCompraParcelaAtual').value   = i.parcelaAtual || '';
+    } else {
+      document.getElementById('inputCompraValor').value = i.valor || '';
     }
     document.getElementById('modalCompra').classList.add('open');
   };
@@ -678,13 +708,10 @@
     try {
       await deleteDoc(doc(db, 'cartao_itens', id));
       showToast('Compra excluída');
-      await carregarCompras();
-    } catch(e) {
-      showToast('Erro ao excluir', 'error');
-    }
+      await carregarItens();
+    } catch(e) { showToast('Erro ao excluir', 'error'); }
   };
 
-  // Fecha modais clicando fora
   ['modalCartao','modalCompra'].forEach(id => {
     document.getElementById(id).addEventListener('click', function(e) {
       if (e.target === this) this.classList.remove('open');
@@ -692,6 +719,5 @@
   });
 
 </script>
-
 </body>
 </html>
