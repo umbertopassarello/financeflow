@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — FinanceFlow</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Loading -->
+  <div id="loading" class="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Carregando...</div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <!-- Main -->
+  <div class="main-wrapper">
+
+    <header class="page-header">
+      <div class="page-title">
+        <span class="icon">◈</span> Dashboard
+      </div>
+      <div class="header-actions">
+        <span id="headerMes" style="font-size:0.82rem;color:var(--text-2);font-weight:600;"></span>
+      </div>
+    </header>
+
+    <main class="page-content">
+
+      <!-- Cards de resumo -->
+      <div class="summary-grid" id="summaryGrid">
+        <div class="summary-card anterior">
+          <div class="summary-label">Saldo Anterior</div>
+          <div class="summary-value" id="cardAnterior">R$ 0,00</div>
+          <div class="summary-sub">mês anterior</div>
+        </div>
+        <div class="summary-card income">
+          <div class="summary-label">Recebido</div>
+          <div class="summary-value" id="cardRecebido">R$ 0,00</div>
+          <div class="summary-sub" id="cardRecebidoSub">0 entradas</div>
+        </div>
+        <div class="summary-card expense">
+          <div class="summary-label">Gasto</div>
+          <div class="summary-value" id="cardGasto">R$ 0,00</div>
+          <div class="summary-sub" id="cardGastoSub">0 saídas</div>
+        </div>
+        <div class="summary-card invest">
+          <div class="summary-label">Investido</div>
+          <div class="summary-value" id="cardInvestido">R$ 0,00</div>
+          <div class="summary-sub" id="cardInvestidoSub">0 aportes</div>
+        </div>
+        <div class="summary-card balance">
+          <div class="summary-label">Saldo Atual</div>
+          <div class="summary-value" id="cardSaldo">R$ 0,00</div>
+          <div class="summary-sub" id="cardSaldoSub">—</div>
+        </div>
+      </div>
+
+      <!-- Grid principal -->
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;">
+
+        <!-- Últimas transações -->
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-3);">
+              Últimas Transações
+            </div>
+            <a href="transacoes.html" class="btn btn-ghost btn-sm">Ver todas →</a>
+          </div>
+          <div id="listaTransacoes">
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <div class="empty-title">Nenhuma transação ainda</div>
+              <div class="empty-desc">Vá para Transações para adicionar seus lançamentos</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar direita -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <!-- Gastos por categoria -->
+          <div class="card">
+            <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-3);margin-bottom:16px;">
+              Por Categoria
+            </div>
+            <div id="categoriasChart">
+              <div class="empty-state" style="padding:24px;">
+                <div class="empty-icon">📊</div>
+                <div class="empty-desc">Sem dados ainda</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metas ativas -->
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+              <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-3);">
+                Metas Ativas
+              </div>
+              <a href="metas.html" class="btn btn-ghost btn-sm">Ver →</a>
+            </div>
+            <div id="metasPreview">
+              <div class="empty-state" style="padding:24px;">
+                <div class="empty-icon">🎯</div>
+                <div class="empty-desc">Nenhuma meta cadastrada</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+<script type="module">
+  import { db, collection, getDocs, query, where, orderBy } from './firebase.js';
+  import {
+    renderSidebar, formatBRL, formatMonthYear, getMesAtual,
+    CATEGORIAS_MAP, hideLoading
+  } from './app.js';
+
+  // ── Estado global ──
+  window.APP_MES = getMesAtual();
+
+  // ── Inicializa sidebar ──
+  renderSidebar('dashboard', window.APP_MES, (novoMes) => {
+    window.APP_MES = novoMes;
+    carregarDados();
+  });
+
+  // ── Carrega dados do Firestore ──
+  async function carregarDados() {
+    const mes = window.APP_MES;
+    document.getElementById('headerMes').textContent = formatMonthYear(mes);
+
+    try {
+      const q = query(
+        collection(db, 'transacoes'),
+        where('mes', '==', mes)
+      );
+      const snapshot = await getDocs(q);
+      const transacoes = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      calcularResumo(transacoes);
+      renderTransacoes(transacoes);
+      renderCategorias(transacoes);
+    } catch (err) {
+      console.error('Erro ao carregar dados:', err);
+    }
+
+    await carregarMetas();
+    hideLoading();
+  }
+
+  // ── Calcula resumo ──
+  function calcularResumo(transacoes) {
+    let recebido = 0, gasto = 0, investido = 0;
+    let qtdEntradas = 0, qtdSaidas = 0, qtdInvest = 0;
+
+    transacoes.forEach(t => {
+      if (t.tipo === 'entrada')      { recebido  += t.valor; qtdEntradas++; }
+      if (t.tipo === 'saida')        { gasto     += t.valor; qtdSaidas++;   }
+      if (t.tipo === 'investimento') { investido += t.valor; qtdInvest++;   }
+    });
+
+    const saldo = recebido - gasto - investido;
+
+    document.getElementById('cardRecebido').textContent    = formatBRL(recebido);
+    document.getElementById('cardGasto').textContent       = formatBRL(gasto);
+    document.getElementById('cardInvestido').textContent   = formatBRL(investido);
+    document.getElementById('cardSaldo').textContent       = formatBRL(saldo);
+    document.getElementById('cardRecebidoSub').textContent = `${qtdEntradas} entrada${qtdEntradas !== 1 ? 's' : ''}`;
+    document.getElementById('cardGastoSub').textContent    = `${qtdSaidas} saída${qtdSaidas !== 1 ? 's' : ''}`;
+    document.getElementById('cardInvestidoSub').textContent= `${qtdInvest} aporte${qtdInvest !== 1 ? 's' : ''}`;
+    document.getElementById('cardSaldoSub').textContent    = saldo >= 0 ? 'positivo ↑' : 'negativo ↓';
+  }
+
+  // ── Renderiza últimas transações ──
+  function renderTransacoes(transacoes) {
+    const el = document.getElementById('listaTransacoes');
+    const ultimas = [...transacoes]
+      .sort((a, b) => (b.data || '').localeCompare(a.data || ''))
+      .slice(0, 8);
+
+    if (!ultimas.length) {
+      el.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <div class="empty-title">Nenhuma transação ainda</div>
+          <div class="empty-desc">Vá para Transações para adicionar seus lançamentos</div>
+        </div>`;
+      return;
+    }
+
+    el.innerHTML = ultimas.map(t => {
+      const isEntrada = t.tipo === 'entrada';
+      const isInvest  = t.tipo === 'investimento';
+      const color     = isEntrada ? 'var(--income)' : isInvest ? 'var(--invest)' : 'var(--expense)';
+      const signal    = isEntrada ? '+' : '−';
+      const cat       = CATEGORIAS_MAP[t.categoria];
+      const [,month,day] = (t.data||'').split('-');
+
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);" class="fade-up">
+          <div style="width:36px;height:36px;border-radius:9px;background:${color}18;display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;">
+            ${cat?.icon || '📦'}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.descricao}</div>
+            <div style="font-size:0.72rem;color:var(--text-3);margin-top:2px;">${cat?.label || 'Outros'} · ${day}/${month}</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:0.875rem;font-weight:500;color:${color};flex-shrink:0;">
+            ${signal} ${formatBRL(t.valor)}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ── Renderiza gráfico de categorias ──
+  function renderCategorias(transacoes) {
+    const saidas = transacoes.filter(t => t.tipo === 'saida');
+    if (!saidas.length) return;
+
+    const totais = {};
+    saidas.forEach(t => {
+      totais[t.categoria] = (totais[t.categoria] || 0) + t.valor;
+    });
+
+    const total = Object.values(totais).reduce((a, b) => a + b, 0);
+    const sorted = Object.entries(totais).sort((a, b) => b[1] - a[1]).slice(0, 6);
+
+    const colors = ['#4f8ef7','#34d399','#f87171','#a78bfa','#fbbf24','#6b7280'];
+
+    document.getElementById('categoriasChart').innerHTML = sorted.map(([cat, val], i) => {
+      const pct = Math.round((val / total) * 100);
+      const info = CATEGORIAS_MAP[cat];
+      return `
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+            <span style="font-size:0.8rem;font-weight:600;">${info?.icon || ''} ${info?.label || cat}</span>
+            <span style="font-family:var(--mono);font-size:0.78rem;color:var(--text-2);">${pct}%</span>
+          </div>
+          <div style="height:5px;background:var(--surface3);border-radius:99px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:${colors[i]};border-radius:99px;transition:width 0.6s ease;"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ── Carrega metas ──
+  async function carregarMetas() {
+    try {
+      const snapshot = await getDocs(collection(db, 'metas'));
+      const metas = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+        .filter(m => m.status !== 'concluida')
+        .slice(0, 3);
+
+      if (!metas.length) return;
+
+      document.getElementById('metasPreview').innerHTML = metas.map(m => {
+        const pct = Math.min(100, Math.round(((m.valorAtual || 0) / m.valorAlvo) * 100));
+        return `
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+              <span style="font-size:0.83rem;font-weight:600;">${m.nome}</span>
+              <span style="font-family:var(--mono);font-size:0.78rem;color:var(--accent);">${pct}%</span>
+            </div>
+            <div style="height:6px;background:var(--surface3);border-radius:99px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:99px;transition:width 0.6s ease;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;">
+              <span style="font-size:0.7rem;color:var(--text-3);">${formatBRL(m.valorAtual || 0)}</span>
+              <span style="font-size:0.7rem;color:var(--text-3);">${formatBRL(m.valorAlvo)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      console.error('Erro ao carregar metas:', err);
+    }
+  }
+
+  // ── Inicia ──
+  carregarDados();
+</script>
+
+</body>
+</html>
