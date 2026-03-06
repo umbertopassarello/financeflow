@@ -35,21 +35,6 @@
 
     <main class="page-content">
 
-      <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--border);">
-        <button class="tab-btn active" data-tab="todos" onclick="setTab('todos', this)">
-          Todos
-        </button>
-        <button class="tab-btn" data-tab="entrada" onclick="setTab('entrada', this)">
-          ↑ Entradas
-        </button>
-        <button class="tab-btn" data-tab="saida" onclick="setTab('saida', this)">
-          ↓ Saídas
-        </button>
-        <button class="tab-btn" data-tab="investimento" onclick="setTab('investimento', this)">
-          ▲ Investimentos
-        </button>
-      </div>
-
       <!-- Cards resumo -->
       <div class="summary-grid">
         <div class="summary-card anterior">
@@ -160,97 +145,97 @@
       </div>
 
       <!-- Data e Categoria -->
-      <div class="form-row cols-2">
+      <<div class="form-row cols-2">
         <div class="form-group">
           <label class="form-label">Data</label>
           <input type="date" class="form-input" id="inputData">
         </div>
-        <div class="form-group">
+        <div class="form-group" id="grupoCategoria">
           <label class="form-label">Categoria</label>
           <select class="form-input" id="inputCategoria"></select>
         </div>
-      </div>
+    </div>
 
-      <!-- Forma de Pagamento -->
-      <div class="form-row cols-2" id="grupoFormaPagamento">
-        <div class="form-group">
-          <label class="form-label">Forma de Pagamento</label>
-          <select class="form-input" id="inputFormaPagamento" onchange="onFormaPagamentoChange()">
-            <option value="pix">Pix</option>
-            <option value="debito">Débito</option>
-            <option value="dinheiro">Dinheiro</option>
-            <option value="cartao">Cartão de Crédito</option>
-          </select>
-        </div>
-        <div class="form-group" id="grupoCartao" style="display:none;">
-          <label class="form-label">Cartão</label>
-          <select class="form-input" id="inputCartao"></select>
-        </div>
-      </div>
-
-      <!-- Fixo/Variável -->
-      <div class="form-row cols-2">
-        <div class="form-group">
-          <label class="form-label">Natureza</label>
-          <select class="form-input" id="inputNatureza">
-            <option value="variavel">Variável</option>
-            <option value="fixo">Fixo</option>
-          </select>
-        </div>
-        <div class="form-group" id="grupoPJFreelance">
-          <label class="form-label">PJ / Freelance</label>
-          <select class="form-input" id="inputPJ">
-            <option value="nao">Não</option>
-            <option value="sim">Sim — emitiu nota fiscal</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Destino investimento -->
-      <div class="form-group" id="grupoDestinoinvestimento" style="display:none;">
-        <label class="form-label">Destino do Investimento</label>
-        <select class="form-input" id="inputDestinoInvest">
-          <option value="reserva">Reserva de Emergência</option>
+    <!-- Forma de Pagamento -->
+    <div class="form-row cols-2" id="grupoFormaPagamento">
+      <div class="form-group">
+        <label class="form-label">Forma de Pagamento</label>
+        <select class="form-input" id="inputFormaPagamento" onchange="onFormaPagamentoChange()">
+          <option value="pix">Pix</option>
+          <option value="debito">Débito</option>
+          <option value="dinheiro">Dinheiro</option>
+          <option value="cartao">Cartão de Crédito</option>
         </select>
       </div>
-
-      <!-- Parcelado -->
-      <div id="grupoParcelado">
-        <div class="form-group">
-          <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-2);cursor:pointer;">
-            <input type="checkbox" id="inputParcelado" onchange="onParceladoChange()"
-              style="accent-color:var(--accent);width:15px;height:15px;">
-            Sim, é parcelado
-          </label>
-        </div>
-        <div class="form-row cols-2" id="grupoParcelas" style="display:none;">
-          <div class="form-group">
-            <label class="form-label">Total de Parcelas</label>
-            <input type="number" class="form-input" id="inputTotalParcelas" placeholder="Ex: 6" min="2" max="60">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Parcela Atual</label>
-            <input type="number" class="form-input" id="inputParcelaAtual" placeholder="Ex: 1" min="1" max="60">
-          </div>
-        </div>
+      <div class="form-group" id="grupoCartao" style="display:none;">
+        <label class="form-label">Cartão</label>
+        <select class="form-input" id="inputCartao"></select>
       </div>
-
-      <div id="grupoRecorrente">
-        <div class="form-group">
-          <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-2);cursor:pointer;">
-            <input type="checkbox" id="inputRecorrente" style="accent-color:var(--accent);width:15px;height:15px;">
-            Repetir todo mês automaticamente
-          </label>
-        </div>
-      </div>
-
-      <!-- Botões -->
-      <div style="display:flex;gap:10px;margin-top:8px;">
-        <button class="btn btn-ghost" style="flex:1;" onclick="fecharModal()">Cancelar</button>
-        <button class="btn btn-primary" style="flex:2;" onclick="salvarTransacao()">Salvar Transação</button>
-      </div>
-
     </div>
+
+    <!-- Fixo/Variável -->
+    <div class="form-row cols-2">
+      <div class="form-group">
+        <label class="form-label">Natureza</label>
+        <select class="form-input" id="inputNatureza">
+          <option value="variavel">Variável</option>
+          <option value="fixo">Fixo</option>
+        </select>
+      </div>
+      <div class="form-group" id="grupoPJFreelance">
+        <label class="form-label">PJ / Freelance</label>
+        <select class="form-input" id="inputPJ">
+          <option value="nao">Não</option>
+          <option value="sim">Sim — emitiu nota fiscal</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Destino investimento -->
+    <div class="form-group" id="grupoDestinoinvestimento" style="display:none;">
+      <label class="form-label">Destino do Investimento</label>
+      <select class="form-input" id="inputDestinoInvest">
+        <option value="reserva">Reserva de Emergência</option>
+      </select>
+    </div>
+
+    <!-- Parcelado -->
+    <div id="grupoParcelado">
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-2);cursor:pointer;">
+          <input type="checkbox" id="inputParcelado" onchange="onParceladoChange()"
+            style="accent-color:var(--accent);width:15px;height:15px;">
+          Sim, é parcelado
+        </label>
+      </div>
+      <div class="form-row cols-2" id="grupoParcelas" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Total de Parcelas</label>
+          <input type="number" class="form-input" id="inputTotalParcelas" placeholder="Ex: 6" min="2" max="60">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Parcela Atual</label>
+          <input type="number" class="form-input" id="inputParcelaAtual" placeholder="Ex: 1" min="1" max="60">
+        </div>
+      </div>
+    </div>
+
+    <div id="grupoRecorrente">
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-2);cursor:pointer;">
+          <input type="checkbox" id="inputRecorrente" style="accent-color:var(--accent);width:15px;height:15px;">
+          Repetir todo mês automaticamente
+        </label>
+      </div>
+    </div>
+
+    <!-- Botões -->
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2;" onclick="salvarTransacao()">Salvar Transação</button>
+    </div>
+
+  </div>
   </div>
 
   <!-- Toast -->
@@ -498,6 +483,7 @@
       document.getElementById('grupoCartao').style.display = 'none';
       document.getElementById('grupoDestinoinvestimento').style.display = 'none';
       document.getElementById('grupoFormaPagamento').style.display = '';
+      document.getElementById('grupoCategoria').style.display = 'none';
       setTipo('entrada');
     }
 
@@ -526,6 +512,9 @@
         tipo === 'saida' ? '' : 'none';
       document.getElementById('grupoRecorrente').style.display =
         tipo === 'saida' ? '' : 'none';
+
+      document.getElementById('grupoCategoria').style.display =
+        tipo === 'entrada' ? 'none' : '';
 
       // Categoria opcional para entrada (label muda)
       const labelCat = document.querySelector('label[for-cat]');
@@ -592,13 +581,6 @@
         console.error(e);
         showToast('Erro ao salvar', 'error');
       }
-    };
-
-    window.setTab = function (tab, btn) {
-      filtroAtivo = tab;
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      filtrarTabela();
     };
 
     // ── Editar ──
