@@ -287,8 +287,11 @@
   document.getElementById('headerMes').textContent = '— ' + formatMonthYear(window.APP_MES);
   preencherCategorias();
   renderSeletorCores();
-  await carregarCartoes();
-  hideLoading();
+  try {
+    await carregarCartoes();
+  } finally {
+    hideLoading();
+  }
 
   // ── Tema ──
   function aplicarTema() {
@@ -394,9 +397,10 @@
     } catch(e) {
       console.error(e);
       itens = [];
+    } finally {
+      hideLoading();
     }
     renderFatura();
-  }
 
   // ── Renderiza fatura ──
   function renderFatura() {
