@@ -78,12 +78,12 @@ export function closeModal(id) {
 // ── Loading overlay ──
 export function showLoading() {
   const el = document.getElementById('loading');
-  if (el) el.classList.remove('hidden');
+  if (el) el.style.display = 'flex';
 }
 
 export function hideLoading() {
   const el = document.getElementById('loading');
-  if (el) el.classList.add('hidden');
+  if (el) el.style.display = 'none';
 }
 
 // ── Marcar item ativo no menu ──

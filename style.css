@@ -645,7 +645,7 @@ tbody td {
   transition: opacity 0.4s ease;
 }
 
-.loading-overlay.hidden { opacity: 0; pointer-events: none; }
+.loading-overlay.hidden { opacity: 0; pointer-events: none; display: none; }
 
 .spinner {
   width: 36px; height: 36px;
