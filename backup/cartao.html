@@ -35,7 +35,6 @@
 
       <div id="secaoFatura" style="display:none;">
 
-        <!-- Totalizadores -->
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
           <div class="summary-card expense">
             <div class="summary-label">Total Fatura</div>
@@ -59,14 +58,12 @@
           </div>
         </div>
 
-        <!-- Barra de limite -->
         <div style="margin-bottom:20px;">
           <div style="height:6px;background:var(--surface3);border-radius:99px;overflow:hidden;">
             <div id="faturaBarraLimite" style="height:100%;width:0%;background:var(--accent);border-radius:99px;transition:width 0.6s ease;"></div>
           </div>
         </div>
 
-        <!-- Ações -->
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
           <div style="display:flex;gap:8px;flex-wrap:wrap;" id="filtrosBar">
             <button class="filter-chip active" data-filtro="todos">Todos</button>
@@ -84,7 +81,6 @@
           </div>
         </div>
 
-        <!-- Nota -->
         <div style="background:var(--accent-dim);border:1px solid var(--border2);border-radius:var(--radius);padding:10px 16px;margin-bottom:16px;font-size:0.82rem;color:var(--text-2);">
           💡 <strong style="color:var(--accent);">Suas compras</strong> são registradas em
           <a href="transacoes.html" style="color:var(--accent);font-weight:700;">Transações</a>
@@ -92,7 +88,6 @@
           Use <strong style="color:var(--text);">"+ Compra de Terceiro"</strong> para lançar compras do pai ou namorada.
         </div>
 
-        <!-- Tabela -->
         <div class="table-wrap">
           <table>
             <thead>
@@ -105,7 +100,7 @@
                 <th>Parcelas</th>
                 <th>De quem</th>
                 <th>Status</th>
-                <th style="width:100px;"></th>
+                <th style="width:90px;"></th>
               </tr>
             </thead>
             <tbody id="corpoFatura">
@@ -163,25 +158,21 @@
           <input type="hidden" id="inputCartaoCor" value="#8b5cf6">
         </div>
       </div>
-      <!-- Botão excluir cartão (só aparece ao editar) -->
-      <div id="grupoExcluirCartao" style="display:none;margin-top:4px;">
-        <button class="btn btn-danger" style="width:100%;" id="excluirCartaoBtn">🗑 Excluir este cartão</button>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:12px;">
+      <div style="display:flex;gap:10px;margin-top:8px;">
         <button class="btn btn-ghost" style="flex:1;" id="cancelarCartaoBtn">Cancelar</button>
         <button class="btn btn-primary" style="flex:2;" id="salvarCartaoBtn">Salvar Cartão</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL COMPRA (nova ou editar) -->
+  <!-- MODAL COMPRA DE TERCEIRO -->
   <div class="modal-overlay" id="modalCompra">
     <div class="modal" style="max-width:500px;">
       <div class="modal-header">
         <div class="modal-title" id="modalCompraTitulo">Compra de Terceiro</div>
         <button class="modal-close" id="fecharModalCompraBtn">✕</button>
       </div>
-      <div id="avisoTerceiro" style="background:var(--warning-bg);border:1px solid rgba(251,191,36,0.3);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:0.82rem;color:var(--warning);">
+      <div style="background:var(--warning-bg);border:1px solid rgba(251,191,36,0.3);border-radius:var(--radius);padding:10px 14px;margin-bottom:16px;font-size:0.82rem;color:var(--warning);">
         ⚠️ Use apenas para compras do <strong>pai</strong> ou <strong>namorada</strong> feitas no seu cartão. Não afetam seu saldo.
       </div>
       <div class="form-row cols-2">
@@ -192,7 +183,6 @@
         <div class="form-group">
           <label class="form-label">De quem?</label>
           <select class="form-input" id="inputCompraDono">
-            <option value="eu">Minha compra</option>
             <option value="pai">Pai</option>
             <option value="namorada">Namorada</option>
           </select>
@@ -234,7 +224,7 @@
       </div>
       <div style="display:flex;gap:10px;margin-top:8px;">
         <button class="btn btn-ghost" style="flex:1;" id="cancelarCompraBtn">Cancelar</button>
-        <button class="btn btn-primary" style="flex:2;" id="salvarCompraBtn">Salvar</button>
+        <button class="btn btn-primary" style="flex:2;" id="salvarCompraBtn">Salvar Compra</button>
       </div>
     </div>
   </div>
@@ -269,26 +259,34 @@
       if (btn) btn.textContent = tema === 'light' ? '🌙' : '☀️';
     }
     document.getElementById('btnTema').addEventListener('click', () => {
-      localStorage.setItem('tema', localStorage.getItem('tema') === 'light' ? 'dark' : 'light');
+      const novo = localStorage.getItem('tema') === 'light' ? 'dark' : 'light';
+      localStorage.setItem('tema', novo);
       aplicarTema();
     });
 
-    // ── Eventos fixos ──
-    document.getElementById('btnNovoCartao').addEventListener('click', abrirModalNovoCartao);
-    document.getElementById('btnNovaCompra').addEventListener('click', abrirModalNovaCompra);
+    // ── Botões do header ──
+    document.getElementById('btnNovoCartao').addEventListener('click', abrirModalCartao);
+    document.getElementById('btnNovaCompra').addEventListener('click', abrirModalCompra);
     document.getElementById('btnQuitarFatura').addEventListener('click', quitarFatura);
+
+    // ── Botões dos modais ──
     document.getElementById('fecharModalCartaoBtn').addEventListener('click', fecharModalCartao);
     document.getElementById('cancelarCartaoBtn').addEventListener('click', fecharModalCartao);
     document.getElementById('salvarCartaoBtn').addEventListener('click', salvarCartao);
-    document.getElementById('excluirCartaoBtn').addEventListener('click', excluirCartao);
     document.getElementById('fecharModalCompraBtn').addEventListener('click', fecharModalCompra);
     document.getElementById('cancelarCompraBtn').addEventListener('click', fecharModalCompra);
     document.getElementById('salvarCompraBtn').addEventListener('click', salvarCompra);
-    document.getElementById('buscaFatura').addEventListener('input', filtrarFatura);
-    document.getElementById('inputCompraParcelado').addEventListener('change', function () {
+
+    // ── Parcelado compra ──
+    document.getElementById('inputCompraParcelado').addEventListener('change', function() {
       document.getElementById('grupoCompraParc').style.display  = this.checked ? '' : 'none';
       document.getElementById('grupoCompraValor').style.display = this.checked ? 'none' : '';
     });
+
+    // ── Busca fatura ──
+    document.getElementById('buscaFatura').addEventListener('input', filtrarFatura);
+
+    // ── Filtros da fatura ──
     document.getElementById('filtrosBar').addEventListener('click', (e) => {
       const btn = e.target.closest('.filter-chip');
       if (!btn) return;
@@ -297,10 +295,12 @@
       btn.classList.add('active');
       filtrarFatura();
     });
-    document.getElementById('modalCartao').addEventListener('click', function (e) {
+
+    // ── Fecha modal clicando fora ──
+    document.getElementById('modalCartao').addEventListener('click', function(e) {
       if (e.target === this) fecharModalCartao();
     });
-    document.getElementById('modalCompra').addEventListener('click', function (e) {
+    document.getElementById('modalCompra').addEventListener('click', function(e) {
       if (e.target === this) fecharModalCompra();
     });
 
@@ -317,7 +317,7 @@
           width:22px;height:22px;border-radius:50%;background:${cor};cursor:pointer;
           border:3px solid ${cor === sel ? '#fff' : 'transparent'};transition:border-color 0.15s;">
         </div>`).join('');
-      document.querySelectorAll('#seletorCores div').forEach(el => {
+      document.getElementById('seletorCores').querySelectorAll('div').forEach(el => {
         el.addEventListener('click', () => {
           document.getElementById('inputCartaoCor').value = el.dataset.cor;
           renderSeletorCores(el.dataset.cor);
@@ -347,18 +347,14 @@
         const snap = await getDocs(collection(db, 'cartoes'));
         cartoes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       } catch (e) {
-        console.error(e);
+        console.error('Erro ao carregar cartões:', e);
         cartoes = [];
       }
       renderCartoesUI();
-      if (cartoes.length) {
-        const idAtivo = cartaoAtivo?.id || cartoes[0].id;
-        const ainda   = cartoes.find(c => c.id === idAtivo);
-        await selecionarCartao(ainda ? idAtivo : cartoes[0].id);
-      }
+      if (cartoes.length) await selecionarCartao(cartoes[0].id);
     }
 
-    // ── Renderiza cards ──
+    // ── Renderiza cards dos cartões ──
     function renderCartoesUI() {
       const el = document.getElementById('listaCartoes');
       if (!cartoes.length) {
@@ -369,6 +365,7 @@
         return;
       }
       document.getElementById('semCartoes').style.display = 'none';
+
       el.innerHTML = cartoes.map(c => {
         const ativo = cartaoAtivo?.id === c.id;
         return `
@@ -396,16 +393,19 @@
           </div>`;
       }).join('');
 
+      // Eventos dos cards
       document.querySelectorAll('.cartao-card').forEach(card => {
         card.addEventListener('click', (e) => {
           if (e.target.classList.contains('editar-cartao-btn')) return;
           selecionarCartao(card.dataset.id);
         });
       });
+
+      // Eventos dos botões de editar
       document.querySelectorAll('.editar-cartao-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
-          abrirModalEditarCartao(btn.dataset.edit);
+          editarCartao(btn.dataset.edit);
         });
       });
     }
@@ -420,7 +420,7 @@
       }
     }
 
-    // ── Carrega itens ──
+    // ── Carrega itens da fatura ──
     async function carregarItens() {
       if (!cartaoAtivo) return;
       try {
@@ -432,13 +432,13 @@
         itens = snap.docs.map(d => ({ id: d.id, ...d.data() }))
           .sort((a, b) => (b.data || '').localeCompare(a.data || ''));
       } catch (e) {
-        console.error(e);
+        console.error('Erro ao carregar itens:', e);
         itens = [];
       }
       renderFatura();
     }
 
-    // ── Fatura ──
+    // ── Renderiza fatura ──
     function renderFatura() {
       document.getElementById('secaoFatura').style.display = '';
       let totalFatura = 0, totalMeu = 0, totalTerceiros = 0;
@@ -461,6 +461,7 @@
       filtrarFatura();
     }
 
+    // ── Filtra fatura ──
     function filtrarFatura() {
       const busca = (document.getElementById('buscaFatura')?.value || '').toLowerCase();
       let lista = [...itens];
@@ -489,9 +490,6 @@
         const isTerceiro = i.dono !== 'eu';
         const pago       = i.status === 'pago';
         const parcelaInfo= i.parcelado ? `${i.parcelaAtual}/${i.totalParcelas}` : '—';
-        // Compras "via TX" = vieram de Transações (têm transacaoId) e dono === 'eu'
-        const viaTX = i.transacaoId && i.dono === 'eu';
-
         return `
           <tr style="${isTerceiro ? 'opacity:0.8;' : ''}" class="fade-up">
             <td style="text-align:center;font-size:1rem;">${cat?.icon || '📦'}</td>
@@ -500,7 +498,6 @@
                 ${i.descricao}
               </div>
               ${isTerceiro ? '<div style="font-size:0.68rem;color:var(--text-3);">não afeta seu saldo</div>' : ''}
-              ${viaTX ? '<div style="font-size:0.68rem;color:var(--accent);">via Transações</div>' : ''}
             </td>
             <td>
               <span style="font-family:var(--mono);font-weight:500;
@@ -513,7 +510,7 @@
             <td style="font-size:0.82rem;color:var(--text-2);">${parcelaInfo}</td>
             <td>
               <span style="padding:3px 10px;border-radius:99px;font-size:0.72rem;font-weight:700;
-                background:${(donoColor[i.dono] || 'var(--accent)')}18;color:${donoColor[i.dono] || 'var(--accent)'};">
+                background:${donoColor[i.dono]}18;color:${donoColor[i.dono]};">
                 ${i.dono === 'eu' ? '👤' : '👥'} ${donoLabel[i.dono] || i.dono}
               </span>
             </td>
@@ -525,8 +522,9 @@
             </td>
             <td>
               <div style="display:flex;gap:4px;align-items:center;">
-                <button class="btn-icon editar-item-btn" data-id="${i.id}" title="Editar">✎</button>
-                <button class="btn-icon excluir-item-btn" data-id="${i.id}" title="Excluir" style="color:var(--expense);">✕</button>
+                ${isTerceiro ? `<button class="btn-icon editar-compra-btn" data-id="${i.id}">✎</button>` : ''}
+                ${isTerceiro ? `<button class="btn-icon excluir-compra-btn" data-id="${i.id}" style="color:var(--expense);">✕</button>` : ''}
+                ${!isTerceiro ? `<span style="font-size:0.7rem;color:var(--text-3);">via TX</span>` : ''}
               </div>
             </td>
           </tr>`;
@@ -536,15 +534,15 @@
       document.querySelectorAll('.toggle-pago-btn').forEach(btn => {
         btn.addEventListener('click', () => togglePago(btn.dataset.id, btn.dataset.pago === 'true'));
       });
-      document.querySelectorAll('.editar-item-btn').forEach(btn => {
-        btn.addEventListener('click', () => abrirModalEditarItem(btn.dataset.id));
+      document.querySelectorAll('.editar-compra-btn').forEach(btn => {
+        btn.addEventListener('click', () => editarCompra(btn.dataset.id));
       });
-      document.querySelectorAll('.excluir-item-btn').forEach(btn => {
-        btn.addEventListener('click', () => excluirItem(btn.dataset.id));
+      document.querySelectorAll('.excluir-compra-btn').forEach(btn => {
+        btn.addEventListener('click', () => excluirCompra(btn.dataset.id));
       });
     }
 
-    // ── Toggle pago individual ──
+    // ── Toggle pago ──
     async function togglePago(id, estaPago) {
       try {
         await updateDoc(doc(db, 'cartao_itens', id), { status: estaPago ? 'pendente' : 'pago' });
@@ -557,8 +555,8 @@
 
     // ── Quitar fatura ──
     async function quitarFatura() {
-      const pendentes = itens.filter(i => i.status !== 'pago');
-      if (!pendentes.length) return showToast('Nenhuma compra pendente nesta fatura', 'warning');
+      const pendentes = itens.filter(i => i.status !== 'pago' && i.dono === 'eu');
+      if (!pendentes.length) return showToast('Nenhuma compra pendente sua nesta fatura', 'warning');
       if (!confirm(`Marcar ${pendentes.length} compra(s) como pagas?`)) return;
       try {
         await Promise.all(pendentes.map(i =>
@@ -571,74 +569,35 @@
       }
     }
 
-    // ── Excluir item da fatura ──
-    async function excluirItem(id) {
-      if (!confirm('Excluir esta compra da fatura?')) return;
-      try {
-        await deleteDoc(doc(db, 'cartao_itens', id));
-        showToast('Compra excluída');
-        await carregarItens();
-      } catch (e) {
-        showToast('Erro ao excluir', 'error');
-      }
-    }
-
-    // ── Editar item da fatura ──
-    function abrirModalEditarItem(id) {
-      const i = itens.find(x => x.id === id);
-      if (!i) return;
-      editandoCompraId = id;
-      document.getElementById('modalCompraTitulo').textContent  = 'Editar Compra';
-      document.getElementById('avisoTerceiro').style.display    = i.dono !== 'eu' ? '' : 'none';
-      document.getElementById('inputCompraNome').value          = i.descricao || '';
-      document.getElementById('inputCompraData').value          = i.data || '';
-      document.getElementById('inputCompraCategoria').value     = i.categoria || '';
-      document.getElementById('inputCompraDono').value          = i.dono || 'eu';
-      document.getElementById('inputCompraParcelado').checked   = i.parcelado || false;
-      if (i.parcelado) {
-        document.getElementById('grupoCompraParc').style.display  = '';
-        document.getElementById('grupoCompraValor').style.display = 'none';
-        document.getElementById('inputCompraValorParcela').value  = i.valorParcela || i.valor || '';
-        document.getElementById('inputCompraTotalParc').value     = i.totalParcelas || '';
-        document.getElementById('inputCompraParcelaAtual').value  = i.parcelaAtual || '';
-      } else {
-        document.getElementById('grupoCompraValor').style.display = '';
-        document.getElementById('inputCompraValor').value         = i.valor || '';
-      }
-      document.getElementById('modalCompra').classList.add('open');
-    }
-
     // ── Modal Cartão ──
-    function abrirModalNovoCartao() {
+    function abrirModalCartao() {
       editandoCartaoId = null;
-      document.getElementById('modalCartaoTitulo').textContent       = 'Novo Cartão';
-      document.getElementById('inputCartaoNome').value               = '';
-      document.getElementById('inputCartaoLimite').value             = '';
-      document.getElementById('inputCartaoVencimento').value         = '';
-      document.getElementById('inputCartaoFechamento').value         = '';
-      document.getElementById('inputCartaoCor').value                = '#8b5cf6';
-      document.getElementById('grupoExcluirCartao').style.display    = 'none';
+      document.getElementById('modalCartaoTitulo').textContent = 'Novo Cartão';
+      document.getElementById('inputCartaoNome').value         = '';
+      document.getElementById('inputCartaoLimite').value       = '';
+      document.getElementById('inputCartaoVencimento').value   = '';
+      document.getElementById('inputCartaoFechamento').value   = '';
+      document.getElementById('inputCartaoCor').value          = '#8b5cf6';
       renderSeletorCores('#8b5cf6');
-      document.getElementById('modalCartao').classList.add('open');
-    }
-
-    function abrirModalEditarCartao(id) {
-      const c = cartoes.find(x => x.id === id);
-      if (!c) return;
-      editandoCartaoId = id;
-      document.getElementById('modalCartaoTitulo').textContent       = 'Editar Cartão';
-      document.getElementById('inputCartaoNome').value               = c.nome || '';
-      document.getElementById('inputCartaoLimite').value             = c.limite || '';
-      document.getElementById('inputCartaoVencimento').value         = c.vencimento || '';
-      document.getElementById('inputCartaoFechamento').value         = c.fechamento || '';
-      document.getElementById('inputCartaoCor').value                = c.cor || '#8b5cf6';
-      document.getElementById('grupoExcluirCartao').style.display    = '';
-      renderSeletorCores(c.cor || '#8b5cf6');
       document.getElementById('modalCartao').classList.add('open');
     }
 
     function fecharModalCartao() {
       document.getElementById('modalCartao').classList.remove('open');
+    }
+
+    function editarCartao(id) {
+      const c = cartoes.find(x => x.id === id);
+      if (!c) return;
+      editandoCartaoId = id;
+      document.getElementById('modalCartaoTitulo').textContent = 'Editar Cartão';
+      document.getElementById('inputCartaoNome').value         = c.nome || '';
+      document.getElementById('inputCartaoLimite').value       = c.limite || '';
+      document.getElementById('inputCartaoVencimento').value   = c.vencimento || '';
+      document.getElementById('inputCartaoFechamento').value   = c.fechamento || '';
+      document.getElementById('inputCartaoCor').value          = c.cor || '#8b5cf6';
+      renderSeletorCores(c.cor || '#8b5cf6');
+      document.getElementById('modalCartao').classList.add('open');
     }
 
     async function salvarCartao() {
@@ -666,27 +625,11 @@
       }
     }
 
-    async function excluirCartao() {
-      if (!editandoCartaoId) return;
-      const c = cartoes.find(x => x.id === editandoCartaoId);
-      if (!confirm(`Excluir o cartão "${c?.nome}"? Todos os itens da fatura serão mantidos no banco.`)) return;
-      try {
-        await deleteDoc(doc(db, 'cartoes', editandoCartaoId));
-        showToast('Cartão excluído');
-        fecharModalCartao();
-        cartaoAtivo = null;
-        await carregarCartoes();
-      } catch (e) {
-        showToast('Erro ao excluir cartão', 'error');
-      }
-    }
-
     // ── Modal Compra ──
-    function abrirModalNovaCompra() {
+    function abrirModalCompra() {
       if (!cartaoAtivo) return showToast('Selecione um cartão primeiro', 'warning');
       editandoCompraId = null;
       document.getElementById('modalCompraTitulo').textContent     = 'Compra de Terceiro';
-      document.getElementById('avisoTerceiro').style.display       = '';
       document.getElementById('inputCompraNome').value             = '';
       document.getElementById('inputCompraValor').value            = '';
       document.getElementById('inputCompraValorParcela').value     = '';
@@ -701,7 +644,6 @@
 
     function fecharModalCompra() {
       document.getElementById('modalCompra').classList.remove('open');
-      editandoCompraId = null;
     }
 
     async function salvarCompra() {
@@ -727,11 +669,9 @@
 
       const payload = {
         descricao, valor, valorParcela, data, categoria,
-        cartaoId: cartaoAtivo.id, dono,
-        afetaSaldo: dono === 'eu',
+        cartaoId: cartaoAtivo.id, dono, afetaSaldo: false,
         parcelado, totalParcelas, parcelaAtual,
-        status: 'pendente', mes: window.APP_MES,
-        criadoEm: serverTimestamp()
+        status: 'pendente', mes: window.APP_MES, criadoEm: serverTimestamp()
       };
 
       try {
@@ -749,7 +689,7 @@
                 ...payload, parcelaAtual: p, mes: mesFuturo, criadoEm: serverTimestamp()
               });
             }
-            showToast(`Salvo com ${totalParcelas - parcelaAtual} parcelas futuras!`);
+            showToast(`Compra salva com ${totalParcelas - parcelaAtual} parcelas futuras!`);
           } else {
             showToast('Compra adicionada!');
           }
@@ -759,6 +699,40 @@
       } catch (e) {
         console.error(e);
         showToast('Erro ao salvar compra', 'error');
+      }
+    }
+
+    function editarCompra(id) {
+      const i = itens.find(x => x.id === id);
+      if (!i) return;
+      editandoCompraId = id;
+      document.getElementById('modalCompraTitulo').textContent  = 'Editar Compra';
+      document.getElementById('inputCompraNome').value          = i.descricao || '';
+      document.getElementById('inputCompraData').value          = i.data || '';
+      document.getElementById('inputCompraCategoria').value     = i.categoria || '';
+      document.getElementById('inputCompraDono').value          = i.dono || 'pai';
+      document.getElementById('inputCompraParcelado').checked   = i.parcelado || false;
+      if (i.parcelado) {
+        document.getElementById('grupoCompraParc').style.display  = '';
+        document.getElementById('grupoCompraValor').style.display = 'none';
+        document.getElementById('inputCompraValorParcela').value  = i.valorParcela || i.valor || '';
+        document.getElementById('inputCompraTotalParc').value     = i.totalParcelas || '';
+        document.getElementById('inputCompraParcelaAtual').value  = i.parcelaAtual || '';
+      } else {
+        document.getElementById('grupoCompraValor').style.display = '';
+        document.getElementById('inputCompraValor').value         = i.valor || '';
+      }
+      document.getElementById('modalCompra').classList.add('open');
+    }
+
+    async function excluirCompra(id) {
+      if (!confirm('Excluir esta compra da fatura?')) return;
+      try {
+        await deleteDoc(doc(db, 'cartao_itens', id));
+        showToast('Compra excluída');
+        await carregarItens();
+      } catch (e) {
+        showToast('Erro ao excluir', 'error');
       }
     }
 
