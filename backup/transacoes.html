@@ -28,8 +28,8 @@
         <span id="headerMes" style="font-size:0.78rem;color:var(--text-2);font-weight:500;margin-left:4px;"></span>
       </div>
       <div class="header-actions">
-        <button class="btn-icon" id="btnTema" title="Alternar tema">🌙</button>
-        <button class="btn btn-primary" id="btnNovaTransacao">+ Nova Transação</button>
+        <button class="btn-icon" id="btnTema" onclick="alternarTema()" title="Alternar tema">🌙</button>
+        <button class="btn btn-primary" onclick="abrirModal()">+ Nova Transação</button>
       </div>
     </header>
 
@@ -65,17 +65,17 @@
       </div>
 
       <!-- Filtros -->
-      <div class="filters-bar" id="filtrosBar">
-        <button class="filter-chip active" data-filtro="todos">Todos</button>
-        <button class="filter-chip" data-filtro="entrada">Entradas</button>
-        <button class="filter-chip" data-filtro="saida">Saídas</button>
-        <button class="filter-chip" data-filtro="investimento">Investimentos</button>
-        <button class="filter-chip" data-filtro="pago">Pagos</button>
-        <button class="filter-chip" data-filtro="pendente">Pendentes</button>
-        <button class="filter-chip" data-filtro="fixo">Fixos</button>
+      <div class="filters-bar">
+        <button class="filter-chip active" onclick="setFiltro('todos', this)">Todos</button>
+        <button class="filter-chip" onclick="setFiltro('entrada', this)">Entradas</button>
+        <button class="filter-chip" onclick="setFiltro('saida', this)">Saídas</button>
+        <button class="filter-chip" onclick="setFiltro('investimento', this)">Investimentos</button>
+        <button class="filter-chip" onclick="setFiltro('pago', this)">Pagos</button>
+        <button class="filter-chip" onclick="setFiltro('pendente', this)">Pendentes</button>
+        <button class="filter-chip" onclick="setFiltro('fixo', this)">Fixos</button>
         <div style="margin-left:auto;">
           <input type="text" class="form-input" id="busca" placeholder="🔍  Buscar..."
-            style="width:200px;padding:6px 12px;font-size:0.82rem;">
+            style="width:200px;padding:6px 12px;font-size:0.82rem;" oninput="filtrarTabela()">
         </div>
       </div>
 
@@ -118,16 +118,16 @@
 
       <div class="modal-header">
         <div class="modal-title" id="modalTitulo">Nova Transação</div>
-        <button class="modal-close" id="fecharModalBtn">✕</button>
+        <button class="modal-close" onclick="fecharModal()">✕</button>
       </div>
 
       <!-- Tipo -->
       <div class="form-group">
         <label class="form-label">Tipo</label>
         <div class="type-toggle">
-          <button class="type-btn active-entrada" data-tipo="entrada">↑ Entrada</button>
-          <button class="type-btn" data-tipo="saida">↓ Saída</button>
-          <button class="type-btn" data-tipo="investimento">▲ Investimento</button>
+          <button class="type-btn active-entrada" data-tipo="entrada" onclick="setTipo('entrada')">↑ Entrada</button>
+          <button class="type-btn" data-tipo="saida" onclick="setTipo('saida')">↓ Saída</button>
+          <button class="type-btn" data-tipo="investimento" onclick="setTipo('investimento')">▲ Investimento</button>
         </div>
       </div>
 
@@ -186,7 +186,7 @@
         <div class="form-row cols-2">
           <div class="form-group">
             <label class="form-label">Forma de Pagamento</label>
-            <select class="form-input" id="inputFormaPagamento">
+            <select class="form-input" id="inputFormaPagamento" onchange="onFormaPagamentoChange()">
               <option value="pix">Pix</option>
               <option value="debito">Débito</option>
               <option value="dinheiro">Dinheiro</option>
@@ -204,7 +204,7 @@
       <div id="grupoParcelado" style="display:none;">
         <div class="form-group">
           <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-2);cursor:pointer;">
-            <input type="checkbox" id="inputParcelado"
+            <input type="checkbox" id="inputParcelado" onchange="onParceladoChange()"
               style="accent-color:var(--accent);width:15px;height:15px;">
             Compra parcelada
           </label>
@@ -212,7 +212,8 @@
         <div class="form-row cols-3" id="grupoParcelas" style="display:none;">
           <div class="form-group">
             <label class="form-label">Valor da Parcela (R$)</label>
-            <input type="number" class="form-input" id="inputValorParcela" placeholder="Ex: 100,00" step="0.01" min="0">
+            <input type="number" class="form-input" id="inputValorParcela" placeholder="Ex: 100,00" step="0.01" min="0"
+              oninput="sincronizarValorParcela()">
           </div>
           <div class="form-group">
             <label class="form-label">Parcela Atual</label>
@@ -237,8 +238,8 @@
 
       <!-- Botões -->
       <div style="display:flex;gap:10px;margin-top:8px;">
-        <button class="btn btn-ghost" style="flex:1;" id="cancelarTransacaoBtn">Cancelar</button>
-        <button class="btn btn-primary" style="flex:2;" id="salvarTransacaoBtn">Salvar Transação</button>
+        <button class="btn btn-ghost" style="flex:1;" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-primary" style="flex:2;" onclick="salvarTransacao()">Salvar Transação</button>
       </div>
 
     </div>
@@ -262,34 +263,6 @@
     let editandoId = null;
     let cartoes = [];
 
-    // ── Eventos estáticos ──
-    document.getElementById('btnTema').addEventListener('click', () => {
-      localStorage.setItem('tema', localStorage.getItem('tema') === 'light' ? 'dark' : 'light');
-      aplicarTema();
-    });
-    document.getElementById('btnNovaTransacao').addEventListener('click', abrirModal);
-    document.getElementById('fecharModalBtn').addEventListener('click', fecharModal);
-    document.getElementById('cancelarTransacaoBtn').addEventListener('click', fecharModal);
-    document.getElementById('salvarTransacaoBtn').addEventListener('click', salvarTransacao);
-    document.getElementById('busca').addEventListener('input', filtrarTabela);
-    document.getElementById('inputFormaPagamento').addEventListener('change', onFormaPagamentoChange);
-    document.getElementById('inputParcelado').addEventListener('change', onParceladoChange);
-    document.getElementById('inputValorParcela').addEventListener('input', sincronizarValorParcela);
-    document.getElementById('modalTransacao').addEventListener('click', function (e) {
-      if (e.target === this) fecharModal();
-    });
-    document.querySelectorAll('.type-btn').forEach(btn => {
-      btn.addEventListener('click', () => setTipo(btn.dataset.tipo));
-    });
-    document.getElementById('filtrosBar').addEventListener('click', (e) => {
-      const btn = e.target.closest('.filter-chip');
-      if (!btn) return;
-      filtroAtivo = btn.dataset.filtro;
-      document.querySelectorAll('#filtrosBar .filter-chip').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      filtrarTabela();
-    });
-
     aplicarTema();
     renderSidebar('transacoes', window.APP_MES, (mes) => {
       window.APP_MES = mes;
@@ -299,16 +272,9 @@
     document.getElementById('headerMes').textContent = '— ' + formatMonthYear(window.APP_MES);
 
     preencherCategorias();
-    try {
-      await carregarCartoes();
-      await carregarMetas();
-      await carregarTransacoes();
-    } catch (e) {
-      console.error('Erro no carregamento inicial:', e);
-      showToast('Erro ao carregar dados', 'error');
-    } finally {
-      hideLoading();
-    }
+    await carregarCartoes();
+    await carregarMetas();
+    await carregarTransacoes();
 
     // ── Tema ──
     function aplicarTema() {
@@ -359,50 +325,31 @@
         ));
         transacoes = snap.docs.map(d => ({ id: d.id, ...d.data() }))
           .sort((a, b) => (b.data || '').localeCompare(a.data || ''));
-        await calcularResumo();
+        calcularResumo();
         filtrarTabela();
       } catch (e) {
         showToast('Erro ao carregar transações', 'error');
-        console.error(e);
       }
+      hideLoading();
     }
 
-    async function calcularResumo() {
+    function calcularResumo() {
       let recebido = 0, gasto = 0, investido = 0, qe = 0, qs = 0, qi = 0;
       transacoes.forEach(t => {
-        if (t.tipo === 'entrada')      { recebido  += t.valor; qe++; }
-        if (t.tipo === 'saida')        { gasto     += t.valor; qs++; }
+        if (t.tipo === 'entrada') { recebido += t.valor; qe++; }
+        if (t.tipo === 'saida') { gasto += t.valor; qs++; }
         if (t.tipo === 'investimento') { investido += t.valor; qi++; }
       });
-
-      // Busca saldo do mês anterior
-      let saldoAnterior = 0;
-      try {
-        const [ano, mes] = window.APP_MES.split('-').map(Number);
-        const d = new Date(ano, mes - 2, 1); // mês anterior
-        const mesAnterior = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        const snapAnt = await getDocs(query(
-          collection(db, 'transacoes'), where('mes', '==', mesAnterior)
-        ));
-        const txAnt = snapAnt.docs.map(d => d.data());
-        const recAnt = txAnt.filter(t => t.tipo === 'entrada').reduce((s, t) => s + (t.valor || 0), 0);
-        const gasAnt = txAnt.filter(t => t.tipo === 'saida').reduce((s, t) => s + (t.valor || 0), 0);
-        const invAnt = txAnt.filter(t => t.tipo === 'investimento').reduce((s, t) => s + (t.valor || 0), 0);
-        saldoAnterior = recAnt - gasAnt - invAnt;
-      } catch (e) { console.error('Erro ao buscar saldo anterior:', e); }
-
-      const saldo = saldoAnterior + recebido - gasto - investido;
-      document.getElementById('cardAnterior').textContent  = formatBRL(saldoAnterior);
-      document.getElementById('cardRecebido').textContent  = formatBRL(recebido);
-      document.getElementById('cardGasto').textContent     = formatBRL(gasto);
+      const saldo = recebido - gasto - investido;
+      document.getElementById('cardRecebido').textContent = formatBRL(recebido);
+      document.getElementById('cardGasto').textContent = formatBRL(gasto);
       document.getElementById('cardInvestido').textContent = formatBRL(investido);
-      document.getElementById('cardSaldo').textContent     = formatBRL(saldo);
-      document.getElementById('subRecebido').textContent   = `${qe} entrada${qe !== 1 ? 's' : ''}`;
-      document.getElementById('subGasto').textContent      = `${qs} saída${qs !== 1 ? 's' : ''}`;
-      document.getElementById('subInvestido').textContent  = `${qi} aporte${qi !== 1 ? 's' : ''}`;
-      document.getElementById('subSaldo').textContent      = saldo >= 0 ? 'positivo ↑' : 'negativo ↓';
-      document.getElementById('cardSaldo').style.color     = saldo >= 0 ? 'var(--income)' : 'var(--expense)';
-      document.getElementById('cardAnterior').style.color  = saldoAnterior >= 0 ? 'var(--income)' : 'var(--expense)';
+      document.getElementById('cardSaldo').textContent = formatBRL(saldo);
+      document.getElementById('subRecebido').textContent = `${qe} entrada${qe !== 1 ? 's' : ''}`;
+      document.getElementById('subGasto').textContent = `${qs} saída${qs !== 1 ? 's' : ''}`;
+      document.getElementById('subInvestido').textContent = `${qi} aporte${qi !== 1 ? 's' : ''}`;
+      document.getElementById('subSaldo').textContent = saldo >= 0 ? 'positivo ↑' : 'negativo ↓';
+      document.getElementById('cardSaldo').style.color = saldo >= 0 ? 'var(--income)' : 'var(--expense)';
     }
 
     window.filtrarTabela = function () {
@@ -473,32 +420,18 @@
               ${t.natureza === 'fixo' ? '<span class="badge badge-fixed" style="margin-left:4px;">Fixo</span>' : ''}
             </td>
             <td>
-              <span class="badge ${t.status === 'pago' ? 'badge-paid' : 'badge-pending'} toggle-status-btn"
-                data-id="${t.id}" data-pago="${t.status === 'pago'}"
-                style="cursor:pointer;" title="Clique para alternar status">
+              <span class="badge ${t.status === 'pago' ? 'badge-paid' : 'badge-pending'}">
                 ${t.status === 'pago' ? '✓ Pago' : '⏳ Pendente'}
               </span>
             </td>
             <td>
               <div style="display:flex;gap:4px;">
-                <button class="btn-icon editar-tx-btn" data-id="${t.id}" title="Editar">✎</button>
-                <button class="btn-icon excluir-tx-btn" data-id="${t.id}" title="Excluir" style="color:var(--expense);">✕</button>
+                <button class="btn-icon" title="Editar" onclick="editarTransacao('${t.id}')">✎</button>
+                <button class="btn-icon" title="Excluir" onclick="excluirTransacao('${t.id}')" style="color:var(--expense);">✕</button>
               </div>
             </td>
           </tr>`;
       }).join('');
-
-      // Bind status badges
-      document.querySelectorAll('.toggle-status-btn').forEach(btn => {
-        btn.addEventListener('click', () => toggleStatus(btn.dataset.id, btn.dataset.pago === 'true'));
-      });
-      // Bind editar/excluir
-      document.querySelectorAll('.editar-tx-btn').forEach(btn => {
-        btn.addEventListener('click', () => editarTransacao(btn.dataset.id));
-      });
-      document.querySelectorAll('.excluir-tx-btn').forEach(btn => {
-        btn.addEventListener('click', () => excluirTransacao(btn.dataset.id));
-      });
     };
 
     window.setFiltro = function (filtro, btn) {
@@ -543,8 +476,8 @@
       document.querySelector(`.type-btn[data-tipo="${tipo}"]`)
         ?.classList.add(tipo === 'saida' ? 'active-saida' : tipo === 'investimento' ? 'active-invest' : 'active-entrada');
 
-      // Categoria: oculta para Entrada e Investimento
-      document.getElementById('grupoCategoria').style.display = tipo === 'saida' ? '' : 'none';
+      // Categoria: oculta para Entrada
+      document.getElementById('grupoCategoria').style.display = tipo === 'entrada' ? 'none' : '';
       // Pagamento + parcelado + recorrente: só Saída
       document.getElementById('grupoFormaPagamento').style.display = tipo === 'saida' ? '' : 'none';
       document.getElementById('grupoParcelado').style.display = tipo === 'saida' ? '' : 'none';
@@ -710,17 +643,6 @@
       }
       document.getElementById('modalTransacao').classList.add('open');
     };
-
-    // ── Toggle status ──
-    async function toggleStatus(id, estaPago) {
-      try {
-        await updateDoc(doc(db, 'transacoes', id), { status: estaPago ? 'pendente' : 'pago' });
-        showToast(estaPago ? 'Marcado como pendente' : 'Marcado como pago ✓');
-        await carregarTransacoes();
-      } catch (e) {
-        showToast('Erro ao atualizar status', 'error');
-      }
-    }
 
     // ── Excluir ──
     window.excluirTransacao = async function (id) {
